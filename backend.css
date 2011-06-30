@@ -43,6 +43,9 @@ input[type=text].disabled {
   background-color: transparent;
   border: none;
 }
+input.btn_edit {
+  width: 30px;
+}
 
 select
 {
@@ -118,6 +121,9 @@ textarea
 {
   font-size: 7pt;
 }
+.add_rows_intro,
+.edit_rows_intro,
+.sorter_intro,
 .intro {
   border: 1px solid #000000;
   color: #000000;
@@ -125,6 +131,14 @@ textarea
   margin: 20px 0 10px 0;
   padding: 10px;
   font-size: 8pt;
+}
+.sortable_row {
+  color: #000;
+  background-color: #ccc;
+  background-image: url(images/drag_drop.png);
+  background-position: bottom right;
+  background-repeat: no-repeat;
+  cursor: move;
 }
 .message
 {

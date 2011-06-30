@@ -20,10 +20,21 @@ else {
 	require_once(WB_PATH .'/modules/kit_tools/languages/' .LANGUAGE .'.php');
 }
 
+// include language file for flexTable
+if(!file_exists(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/' .LANGUAGE .'.php')) {
+	require_once(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/DE.php'); // Vorgabe: DE verwenden 
+	if (!defined('FLEX_TABLE_LANGUAGE')) define('FLEX_TABLE_LANGUAGE', 'DE'); // die Konstante gibt an in welcher Sprache flexTable aktuell arbeitet
+}
+else {
+	require_once(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/' .LANGUAGE .'.php');
+	if (!defined('FLEX_TABLE_LANGUAGE')) define('FLEX_TABLE_LANGUAGE', LANGUAGE); // die Konstante gibt an in welcher Sprache flexTable aktuell arbeitet
+}
+
+require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.table.php');
 
 global $admin;
 
-$tables = array();
+$tables = array('dbFlexTable', 'dbFlexTableDefinition', 'dbFlexTableRow', 'dbFlexTableCell');
 $error = '';
 
 foreach ($tables as $table) {

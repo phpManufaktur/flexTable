@@ -31,10 +31,11 @@ else {
 }
 
 require_once(WB_PATH.'/modules/kit_tools/class.droplets.php');
+require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.table.php');
 
 global $admin;
 
-$tables = array();
+$tables = array('dbFlexTable', 'dbFlexTableDefinition', 'dbFlexTableRow', 'dbFlexTableCell' );
 $error = '';
 
 foreach ($tables as $table) {

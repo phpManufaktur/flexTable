@@ -1,0 +1,37 @@
+{*
+ * flexTable
+ *
+ * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ * @link http://phpmanufaktur.de
+ * @copyright 2011
+ * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
+ * @version $Id$
+ *}
+<h2>{$title}</h2>
+<div class="intro">{$intro}</div>
+<table width="100%">
+  <colgroup>
+    <col width="50" />
+    <col width="150" />
+    <col width="*" />
+    <col width="150" />
+  </colgroup>
+  <thead>
+    <tr>
+      <th>{$header.id}</th>
+      <th>{$header.name}</th>
+      <th>{$header.description}</th>
+      <th>{$header.timestamp}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {foreach $tables table}
+    <tr class="{cycle values=array('flip', 'flop')}">
+      <td><a href="{$table.link}">{string_format($table.id, '%05d')}</a></td>
+      <td><a href="{$table.link}">{$table.name}</a></td>
+      <td>{$table.description}</td>
+      <td>{date_format($table.timestamp, "%d.%m.%Y - %H:%M:%S")}</td>
+    </tr>
+    {/foreach}
+  </tbody>
+</table>

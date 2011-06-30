@@ -1,0 +1,232 @@
+{*
+ * flexTable
+ *
+ * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ * @link http://phpmanufaktur.de
+ * @copyright 2011
+ * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
+ * @version $Id$
+ *}
+<form name="table_edit" action="{$form_action}" method="post">
+  <input type="hidden" name="{$action_name}" value="{$action_value}" />
+  <input type="hidden" name="{$table.id.name}" value="{$table.id.value}" />
+  <input type="hidden" id="language" name="language" value="{$language}" />{* Sprachangabe fuer jQuery! *}
+  <input type="hidden" id="table_id" name="table_id" value="{$table.id.value}" />
+  <input type="hidden" name="{$edit_detail.name}" value="{$edit_detail.value}" />
+  <h2>{$header}</h2>
+  <div class="{if $is_intro==1}intro{else}message{/if}">{$intro}</div>
+  <table width="100%">
+    <colgroup>
+      <col width="200" />
+      <col width="*" />
+      <col width="300" />
+    </colgroup>
+    <tbody>
+      <tr>
+        <td>&nbsp;</td>
+        <td>{if $table.id.value > 0}{string_format($table.id.value, '%05d')}{/if}</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>{$table.name.label}</td>
+        <td><input type="text" name="{$table.name.name}" value="{$table.name.value}" /></td>
+        <td>{$table.name.hint}</td>
+      </tr>
+      <tr>
+        <td>{$table.description.label}</td>
+        <td><textarea name="{$table.description.name}">{$table.description.value}</textarea>
+        <td>{$table.description.hint}</td>
+      </tr>
+      <tr><td colspan="3">&nbsp;</td></tr>
+    </tbody>
+  </table>
+  <div class="sorter_intro"> 
+    {$sorter_intro}
+  </div>
+  <div id="sorter"> 
+    {* Fuer Rueckmeldungen des jQuery Sorter den folgenden Container aktivieren! *}
+    <!-- <div id="response"></div> -->
+    <table width="100%">
+      <colgroup>
+        <col width="60" />
+        <col width="*" />
+      </colgroup>
+      <tbody>
+        {foreach $definitions definition}
+        <tr id="rowID_{$definition.id.value}" class="{cycle values=array('flip', 'flop')}">
+          <td class="sortable_row">
+            <input type="checkbox" name="{$definition.active.name}" value="{$definition.active.value}" checked="checked" />
+          </td>
+          <td>
+            <table width="100%">
+              <colgroup>
+                <col width="200" />
+                <col width="*" />
+                <col width="300" />
+              </colgroup>
+              <tr>
+                <td><b>{$definition.type.value}</b></td>
+                <td><input type="checkbox" name="{$definition.table_cell.name}" value="1" {if $definition.table_cell.value == 1}checked="checked"  {/if}/> {$definition.table_cell.label}</td>
+                <td>{$definition.table_cell.hint}</td>
+              </tr>
+              <tr>
+                <td>{$definition.name.label}</td>
+                <td><input type="text" name="{$definition.name.name}" value="{$definition.name.value}" /></td>
+                <td>{$definition.name.hint}</td>
+              </tr>
+              <tr>
+                <td>{$definition.head.label}</td>
+                <td><input type="text" name="{$definition.head.name}" value="{$definition.head.value}" /></td>
+                <td>{$definition.head.hint}</td>
+              </tr>
+              {* inaktiv!
+              <tr>
+                <td>{$definition.title.label}</td>
+                <td><input type="text" name="{$definition.title.name}" value="{$definition.title.value}" /></td>
+                <td>{$definition.title.hint}</td>
+              </tr>
+              *}
+            </table>
+          </td>
+        </tr>
+        {/foreach}
+      </tbody>
+    </table>
+  </div>
+
+  <table width="100%">
+    <colgroup>
+      <col width="200" />
+      <col width="*" />
+      <col width="300" />
+    </colgroup>
+    <tbody>
+      <tr><td colspan="3">&nbsp;</td></tr>
+      <tr>
+        <td><b>{$add_definition.label}</b></td>
+        <td>
+          <select name="{$add_definition.name}">
+            {foreach $add_definition.values option}<option value="{$option.key}">{$option.value}</option>{/foreach}
+          </select>
+        </td>
+        <td>{$add_definition.hint}</td>
+      </tr>
+      <tr><td colspan="3">&nbsp;</td></tr>
+    </tbody>
+  </table>
+  
+  <table width="100%">
+    <colgroup>
+      <col width="200" />
+      <col width="*" />
+    </colgroup>
+    <tbody>
+      <tr><td colspan="2">&nbsp;</td></tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>
+          <input type="submit" value="{$btn_ok}" />&nbsp;
+          <input type="button" value="{$btn_abort}" onclick="javascript: window.location = '{$abort_location}'; return false;" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <div class="add_rows_intro">
+    {$intro_rows_add}
+  </div>
+  
+  <table width="100%">
+    <a name="fte"></a>
+    <colgroup>
+      <col width="150" />
+      <col widht="*" />
+    </colgroup>
+    {foreach $edit_row cell}
+    <tr>
+      <td>{$cell.head}</td>
+      <td>
+        {if $cell.type == 'text'}
+        <textarea name="{$cell.name}">{$cell.value}</textarea>
+        {elseif $cell.type == 'media_link'}
+        <select name="{$cell.name}">
+          {foreach $cell.value option}
+          <option value="{$option.value}"{if $option.selected == 1} selected="selected"{/if}>{$option.text}</option>
+          {/foreach}
+        </select>
+        {elseif $cell.type == 'html'}
+        {$cell.value}
+        {else}
+        <input type="text" name="{$cell.name}" value="{$cell.value}" />
+        {/if}
+      </td>
+    </tr>
+    {/foreach}
+  </table>
+  
+  <table width="100%">
+    <colgroup>
+      <col width="200" />
+      <col width="*" />
+    </colgroup>
+    <tbody>
+      <tr><td colspan="2">&nbsp;</td></tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>
+          <input type="submit" value="{$btn_ok}" />&nbsp;
+          <input type="button" value="{$btn_abort}" onclick="javascript: window.location = '{$abort_location}'; return false;" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div class="edit_rows_intro">
+    {$intro_rows_list}
+  </div>
+  
+  <table width="100%">
+    <a name="ftt"></a>
+    <tr>
+      <th>&nbsp;</th>
+      {foreach $definitions definition}
+      {if $definition.table_cell.value == 1}<th>{$definition.head.value}</th>{/if}
+      {/foreach}
+      <th>&nbsp;</th>
+    </tr>
+    {foreach $rows row}
+    <tr class="{cycle values=array('flip', 'flop')}">
+      <td><input type="button" class="btn_edit" value="{$btn_edit}" onclick="javascript: window.location = '{$row.link}'; return false;" /></td>
+      {foreach $row.cells cell}
+      {if $cell.table_cell == 1}<td class="{$cell.class}">{$cell.value}</td>{/if}
+      {/foreach}
+      <td><input type="checkbox" name="{$row.name}" value="{$row.value}" checked="checked" /></td>
+    </tr>
+    {/foreach}
+  </table>
+  
+
+  <table width="100%">
+    <colgroup>
+      <col width="200" />
+      <col width="*" />
+      <col width="300" />
+    </colgroup>
+    <tbody>
+      <tr><td colspan="3">&nbsp;</td></tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td colspan="2"><input type="checkbox" name="{$table_delete.name}" value="{$table_delete.value}" /> {$table_delete.text}</td>
+      </tr>
+      <tr><td colspan="3">&nbsp;</td></tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td colspan="2">
+          <input type="submit" value="{$btn_ok}" />&nbsp;
+          <input type="button" value="{$btn_abort}" onclick="javascript: window.location = '{$abort_location}'; return false;" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</form>

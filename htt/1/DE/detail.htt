@@ -1,0 +1,24 @@
+{*
+ * flexTable
+ *
+ * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ * @link http://phpmanufaktur.de
+ * @copyright 2011
+ * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
+ * @version $Id$
+ *}
+<div id="ft_detail">
+  <a name="ft"></a>
+  {foreach $items item}
+  <div class="ft_item">
+    {if $item.media_type == 'txt'}
+    <p><b>{$item.head}</b> {$item.value}</p>
+    {elseif $item.media_type == 'pdf'}
+    <p><b>{$item.head}</b> <a href="{$item.media_data.url}" target="_blank">{$item.media_data.text}</a></p>
+    {else}
+    <p><b>{$item.head}</b> <img src="{$item.media_data.url}" alt="{$item.media_data.text}" {if $item.media_data.width > 0}width="{$item.media_data.width}"{/if} {if $item.media_data.height > 0}height="{$item.media_data.height}"{/if} /></p>
+    {/if}
+  </div>
+  {/foreach}
+  <p><a href="{$link_back}">Zurück...</a></p>
+</div>

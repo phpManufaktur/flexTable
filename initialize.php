@@ -34,10 +34,20 @@ else {
 if (!class_exists('dbconnectle')) 				require_once(WB_PATH.'/modules/dbconnect_le/include.php');
 if (!class_exists('Dwoo')) 								require_once(WB_PATH.'/modules/dwoo/include.php');
 if (!class_exists('kitToolsLibrary'))   	require_once(WB_PATH.'/modules/kit_tools/class.tools.php');
+if (!class_exists('dbFlextTable'))				require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.table.php');
 
 global $parser;
+global $kitLibrary;
+global $dbFlexTable;
+global $dbFlexTableCell;
+global $dbFlexTableDefinition;
+global $dbFlexTableRow;
 
-if (!is_object($kitLibrary)) $kitLibrary = new kitToolsLibrary();
-if (!is_object($parser)) $parser = new Dwoo();
+if (!is_object($kitLibrary)) 								$kitLibrary = new kitToolsLibrary();
+if (!is_object($parser)) 										$parser = new Dwoo();
+if (!is_object($dbFlexTable))								$dbFlexTable = new dbFlexTable();
+if (!is_object($dbFlexTableCell))						$dbFlexTableCell = new dbFlexTableCell();
+if (!is_object($dbFlexTableDefinition))			$dbFlexTableDefinition = new dbFlexTableDefinition();
+if (!is_object($dbFlexTableRow))						$dbFlexTableRow = new dbFlexTableRow();
 
 ?>

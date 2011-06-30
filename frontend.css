@@ -8,6 +8,7 @@
  * @version $Id$
  */
 
+.table_error, 
 .error
 {
  border: 1px solid #ff0000;
@@ -25,6 +26,7 @@
   padding: 10px;
   font-size: 8pt;
 }
+.table_message,
 .message
 {
   border: 1px solid #0000CC;
@@ -35,10 +37,22 @@
   font-size: 8pt;
 }
 
-td {
+td
+{
   font-size: 8pt;
   vertical-align: top;
 }
+td.label {
+  font-weight: bold;
+}
+
+tr.flip {
+  background-color: #FFFFCC;
+}
+tr.flop {
+  background-color: transparent;
+}
+
 input {
   width: 98%;
   background-color: transparent;
