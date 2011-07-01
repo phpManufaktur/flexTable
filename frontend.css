@@ -73,3 +73,31 @@ textarea {
   width: 98%;
   font-size:8pt;
 }
+/*
+Beispiel Template 101
+*/
+#ft_table_101 {
+  border: 1px solid #ffe4c4;
+  padding: 10px;
+}
+#ft_detail_101 {
+  font-size: 8pt;
+  border: 1px solid #ffe4c4;
+  padding: 10px;
+}
+#ft_detail_101 h1,
+#ft_detail_101 h2,
+#ft_detail_101 h3
+{
+  text-align: left;
+  background-image: none;
+  font-size: 11pt;
+  font-weight: bold;
+  color: #000;
+  background-color: transparent;
+  font-variant: normal;
+}
+.bild_101 {
+  float: right;
+  margin: 10px 0 10px 30px;
+}

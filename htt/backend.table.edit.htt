@@ -79,13 +79,11 @@
                 <td><input type="text" name="{$definition.head.name}" value="{$definition.head.value}" /></td>
                 <td>{$definition.head.hint}</td>
               </tr>
-              {* inaktiv!
               <tr>
                 <td>{$definition.title.label}</td>
                 <td><input type="text" name="{$definition.title.name}" value="{$definition.title.value}" /></td>
                 <td>{$definition.title.hint}</td>
               </tr>
-              *}
             </table>
           </td>
         </tr>

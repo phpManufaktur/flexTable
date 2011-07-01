@@ -1,0 +1,33 @@
+{*
+ * flexTable
+ *
+ * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ * @link http://phpmanufaktur.de
+ * @copyright 2011
+ * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
+ * @version $Id$
+ *
+ * Beispielseite fuer einen Katalog von Naturschutzmassnahmen
+ *}
+<a name="ft"></a> 
+<div id="ft_detail_101">
+  <h2>{$items.massnahme.value}</h2>
+  {if isset($items.bild.media_data.url)}
+  <div class="bild_101">
+    <img src="{$items.bild.media_data.url}" alt="{$items.bild.media_data.text}" width="{$items.bild.media_data.width}" height="{$items.bild.media_data.height}" />
+  </div>
+  {/if}
+  
+  <p><em>{$items.park.title}</em><br />{$items.park.value}</p>
+  <p><em>{$items.land_gemeinde.title}</em><br />{$items.land_gemeinde.value}</p>
+  <p><em>{$items.verwaltung.title}</em><br />{$items.verwaltung.value}</p>
+  <p><em>{$items.ausgangsproblem.title}</em><br />{$items.ausgangsproblem.value}</p>
+  <p><em>{$items.loesungsansatz.title}</em><br />{$items.loesungsansatz.value}</p>
+  <p><em>{$items.massnahme_beschreibung.title}</em><br />{$items.massnahme_beschreibung.value}</p>
+  <p><em>{$items.erfolgsbilanz.title}</em><br />{$items.erfolgsbilanz.value}</p>
+  <p><em>{$items.massnahme_festlegung.title}</em><br />{$items.massnahme_festlegung.value}</p>
+  <p><em>{$items.schutzstatus.title}</em><br />{$items.schutzstatus.value}</p>
+  <p><em>{$items.ansprechpartner.title}</em><br />{$items.ansprechpartner.value}</p>
+   
+  <p><a href="{$link_back}">Zurück zur Übersichtstabelle...</a></p>
+</div>

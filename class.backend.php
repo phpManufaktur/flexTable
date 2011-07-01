@@ -844,7 +844,6 @@ class tableBackend {
 				$message .= sprintf(ft_msg_row_deleted, $row_id);
 			}
 		}
-		
 		// neue Zeilen hinzufuegen?
 		if (isset($_REQUEST[self::request_edit_detail]) && $_REQUEST[self::request_edit_detail] > 0) {
 			$edit = true;
@@ -876,7 +875,7 @@ class tableBackend {
 						$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
 						return false;
 					}
-					$message .= 'aktualisiert';
+					//$message .= 'aktualisiert';
 				}
 			}
 		}
@@ -884,9 +883,18 @@ class tableBackend {
 			$data = array();
 			$add = false;
 			$row_id = -1;
+			$start = true;
 			foreach ($definitions as $definition) {
 				$def_id = $definition[dbFlexTableDefinition::field_id];
-				if (isset($_REQUEST[sprintf('cell_%s', $def_id)]) && !(empty($_REQUEST[sprintf('cell_%s', $def_id)]))) {
+				if ($start && (isset($_REQUEST[sprintf('cell_%s', $def_id)]) && empty($_REQUEST[sprintf('cell_%s', $def_id)]))) {
+					// das erste Feld darf nicht leer sein!
+					break;
+				}
+				else {
+					$start = false;
+				}
+				
+				if (isset($_REQUEST[sprintf('cell_%s', $def_id)])) { 
 					$value = $_REQUEST[sprintf('cell_%s', $def_id)];
 					if ($add == false) {
 						// neue Zeile einfuegen

@@ -1,0 +1,51 @@
+{*
+ * flexTable
+ *
+ * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ * @link http://phpmanufaktur.de
+ * @copyright 2011
+ * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
+ * @version $Id$
+ *}
+<a name="ft"></a> 
+<div id="ft_table_101">
+  <table class="{$table.class}">
+    <thead>
+      <tr>
+        {foreach $table.definition as head}
+        <th class="{$head.class}">{$head.head}</th>
+        {/foreach}
+      </tr>
+      <tr>
+      <tr><form>  
+        {foreach $table.definition as definition}
+        <td><select name="{$definition.filter.name}" onchange="javascript:window.location='{$page_link}?{$definition.filter.name}='+this.form.{$definition.filter.name}.options[this.form.{$definition.filter.name}.selectedIndex].value;">
+          {foreach $definition.filter.values option}
+          <option value="{$option.value}"{if $option.selected == 1} selected="selected"{/if}>{$option.text}</option>
+          {/foreach}
+        </select></td>
+        {/foreach}
+    </form></tr>
+    </thead>
+    <tbody>
+      {foreach $rows row}
+      <tr class="{cycle values=array('flip', 'flop')}">
+        {$i=1}
+        {foreach $row.cells cell}
+        <td class="{$cell.class}">
+          {if $i==3}<a href="{$cell.link}">{$cell.value}</a>
+          {elseif $cell.media_type == 'txt'}
+            {$cell.value}
+          {elseif $cell.media_type == 'pdf'}
+            <a href="{$cell.media_data.url}" target="_blank">{$cell.media_data.text}</a>
+          {else}
+            <img src="{$cell.media_data.url}" alt="{$cell.media_data.text}" {if $cell.media_data.width > 0}width="{$cell.media_data.width}"{/if} {if $cell.media_data.height > 0}height="{$cell.media_data.height}"{/if} />
+          {/if}
+        </td>
+        {$i=$i+1}
+        {/foreach}
+      </tr>
+      {/foreach}
+    </tbody>
+  </table>
+</div>

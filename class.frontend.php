@@ -296,7 +296,9 @@ class tableFrontend {
 		  		foreach ($result as $item) {
 		  			if ((($field == dbFlexTableCell::field_float) || ($field == dbFlexTableCell::field_integer)) && empty($item['filter'])) continue;
 		  			if (empty($item['filter'])) continue;
-		  			$filter_array[$item['filter']] = array('value' => $item['filter'], 'text' => $item['filter'], 'selected' => ($act_filter == $item['filter']) ? 1 : 0);
+		  			$txt = str_replace('||', '', $item['filter']);
+		  			$value = urlencode($item['filter']);
+		  			$filter_array[$item['filter']] = array('value' => $value, 'text' => $txt, 'selected' => ($act_filter == $item['filter']) ? 1 : 0);
 		  		}
 	  		}
 	  		else {
