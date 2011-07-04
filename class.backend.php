@@ -24,8 +24,11 @@ class tableBackend {
 	const request_add_row							= 'rad';
 	const request_delete_table				= 'del';
 	const request_edit_detail					= 'edd';
+	const request_items								= 'its';
 	
 	const action_about								= 'abt';
+	const action_config								= 'cfg';
+	const action_config_check					= 'cfgc';
 	const action_default							= 'def';
 	const action_list									= 'lst';
 	const action_edit									= 'edt';
@@ -35,6 +38,7 @@ class tableBackend {
 	private $tab_navigation_array = array(
 		self::action_list								=> ft_tab_list,
 		self::action_edit								=> ft_tab_edit,
+		self::action_config							=> ft_tab_cfg,
 		self::action_about							=> ft_tab_about		
 	);
 	
@@ -46,14 +50,18 @@ class tableBackend {
 	private $error										= '';
 	private $message									= '';
 	private $media_path								= '';
-	private $media_file_types					= array('jpg', 'jpeg', 'gif', 'png', 'tif', 'pdf');
+	private $media_file_types					= array();
 	
 	public function __construct() {
+		global $dbFlexTableCfg;
 		$this->page_link = ADMIN_URL.'/admintools/tool.php?tool=flex_table';
 		$this->template_path = WB_PATH . '/modules/' . basename(dirname(__FILE__)) . '/htt/' ;
 		$this->img_url = WB_URL. '/modules/'.basename(dirname(__FILE__)).'/images/';
-		$this->media_path = WB_PATH.MEDIA_DIRECTORY.'/flex_table/';
+		$this->media_path = WB_PATH.MEDIA_DIRECTORY.'/'.$dbFlexTableCfg->getValue(dbFlexTableCfg::cfgMediaDirectory).'/';
 		date_default_timezone_set(tool_cfg_time_zone);
+		$img = $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgImageFileTypes);
+		$doc = $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgDocFileTypes);
+		$this->media_file_types = array_merge($img, $doc);
 	} // __construct()
 	
 	/**
@@ -181,6 +189,12 @@ class tableBackend {
   	switch ($action):
   	case self::action_about:
   		$this->show(self::action_about, $this->dlgAbout());
+  		break;
+  	case self::action_config:
+  		$this->show(self::action_config, $this->dlgConfig());
+  		break;
+  	case self::action_config_check:
+  		$this->show(self::action_config, $this->checkConfig());
   		break;
   	case self::action_edit:
   		$this->show(self::action_edit, $this->dlgEdit());
@@ -600,6 +614,8 @@ class tableBackend {
 			case dbFlexTable::field_id:
 				$table[$field] = $table_id;
 				break;
+			case dbFlexTable::field_title:
+			case dbFlexTable::field_keywords:
 			case dbFlexTable::field_description:
 				$table[$field] = isset($_REQUEST[$field]) ? $_REQUEST[$field] : '';
 				break;
@@ -925,6 +941,113 @@ class tableBackend {
 		$this->setMessage($message);
 		return $this->dlgEdit();
 	} // checkEdit()
+	
+  /**
+   * Dialog zur Konfiguration und Anpassung von flexTable
+   * 
+   * @return STR dialog
+   */
+  public function dlgConfig() {
+		global $dbFlexTableCfg;
+		$SQL = sprintf(	"SELECT * FROM %s WHERE NOT %s='%s' ORDER BY %s",
+										$dbFlexTableCfg->getTableName(),
+										dbFlexTableCfg::field_status,
+										dbFlexTableCfg::status_deleted,
+										dbFlexTableCfg::field_name);
+		$config = array();
+		if (!$dbFlexTableCfg->sqlExec($SQL, $config)) {
+			$this->setError($dbFlexTableCfg->getError());
+			return false;
+		}
+		$count = array();
+		$header = array(
+			'identifier'	=> tool_header_cfg_identifier,
+			'value'				=> tool_header_cfg_value,
+			'description'	=> tool_header_cfg_description
+		);
+		
+		$items = array();
+		// bestehende Eintraege auflisten
+		foreach ($config as $entry) {
+			$id = $entry[dbFlexTableCfg::field_id];
+			$count[] = $id;
+			$value = (isset($_REQUEST[dbFlexTableCfg::field_value.'_'.$id])) ? $_REQUEST[dbFlexTableCfg::field_value.'_'.$id] : $entry[dbFlexTableCfg::field_value];
+			$value = str_replace('"', '&quot;', stripslashes($value));
+			$items[] = array(
+				'id'					=> $id,
+				'identifier'	=> constant($entry[dbFlexTableCfg::field_label]),
+				'value'				=> $value,
+				'name'				=> sprintf('%s_%s', dbFlexTableCfg::field_value, $id),
+				'description'	=> constant($entry[dbFlexTableCfg::field_description])  
+			);
+		}
+		$data = array(
+			'form_name'						=> 'flex_table_cfg',
+			'form_action'					=> $this->page_link,
+			'action_name'					=> self::request_action,
+			'action_value'				=> self::action_config_check,
+			'items_name'					=> self::request_items,
+			'items_value'					=> implode(",", $count), 
+			'head'								=> tool_header_cfg,
+			'intro'								=> $this->isMessage() ? $this->getMessage() : sprintf(tool_intro_cfg, 'flexTable'),
+			'is_message'					=> $this->isMessage() ? 1 : 0,
+			'items'								=> $items,
+			'btn_ok'							=> tool_btn_ok,
+			'btn_abort'						=> tool_btn_abort,
+			'abort_location'			=> $this->page_link,
+			'header'							=> $header
+		);
+		return $this->getTemplate('backend.config.htt', $data);
+	} // dlgConfig()
+	
+	/**
+	 * Ueberprueft Aenderungen die im Dialog dlgConfig() vorgenommen wurden
+	 * und aktualisiert die entsprechenden Datensaetze.
+	 * 
+	 * @return STR DIALOG dlgConfig()
+	 */
+	public function checkConfig() {
+		global $dbFlexTableCfg;
+		$message = '';
+		// ueberpruefen, ob ein Eintrag geaendert wurde
+		if ((isset($_REQUEST[self::request_items])) && (!empty($_REQUEST[self::request_items]))) {
+			$ids = explode(",", $_REQUEST[self::request_items]);
+			foreach ($ids as $id) {
+				if (isset($_REQUEST[dbFlexTableCfg::field_value.'_'.$id])) {
+					$value = $_REQUEST[dbFlexTableCfg::field_value.'_'.$id];
+					$where = array();
+					$where[dbFlexTableCfg::field_id] = $id; 
+					$config = array();
+					if (!$dbFlexTableCfg->sqlSelectRecord($where, $config)) {
+						$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCfg->getError()));
+						return false;
+					}
+					if (sizeof($config) < 1) {
+						$this->setError(sprintf(tool_error_cfg_id, $id));
+						return false;
+					}
+					$config = $config[0];
+					if ($config[dbFlexTableCfg::field_value] != $value) {
+						// Wert wurde geaendert
+							if (!$dbFlexTableCfg->setValue($value, $id) && $dbFlexTableCfg->isError()) {
+								$this->setError($dbFlexTableCfg->getError());
+								return false;
+							}
+							elseif ($dbFlexTableCfg->isMessage()) {
+								$message .= $dbFlexTableCfg->getMessage();
+							}
+							else {
+								// Datensatz wurde aktualisiert
+								$message .= sprintf(tool_msg_cfg_id_updated, $config[dbFlexTableCfg::field_name]);
+							}
+					}
+				}
+			}		
+		}		
+		$this->setMessage($message);
+		return $this->dlgConfig();
+	} // checkConfig()
+  
 	
 } // class tableBackend
 

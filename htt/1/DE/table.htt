@@ -8,7 +8,7 @@
  * @version $Id$
  *}
 <div id="{$table.name}">
-  <a name="ft"></a>
+  <a name="{$anchor.table}"></a>
   <table class="{$table.class}">
     <thead>
       <tr>
@@ -19,7 +19,7 @@
       <tr>
       <tr><form>  
         {foreach $table.definition as definition}
-        <td><select name="{$definition.filter.name}" onchange="javascript:window.location='{$page_link}?{$definition.filter.name}='+this.form.{$definition.filter.name}.options[this.form.{$definition.filter.name}.selectedIndex].value;">
+        <td><select name="{$definition.filter.name}" onchange="javascript:window.location='{$page_link}?{$definition.filter.name}='+this.form.{$definition.filter.name}.options[this.form.{$definition.filter.name}.selectedIndex].value+'#{$anchor.table}';">
           {foreach $definition.filter.values option}
           <option value="{$option.value}"{if $option.selected == 1} selected="selected"{/if}>{$option.text}</option>
           {/foreach}
@@ -33,7 +33,7 @@
         {$i=1}
         {foreach $row.cells cell}
         <td class="{$cell.class}">
-          {if $i==1}<a href="{$cell.link}">{$cell.value}</a>
+          {if $i==1}<a href="{$cell.link}#{$anchor.detail}">{$cell.value}</a>
           {elseif $cell.media_type == 'txt'}
             {$cell.value}
           {elseif $cell.media_type == 'pdf'}

@@ -12,7 +12,7 @@
 // prevent this file from being accessed directly
 if (!defined('WB_PATH')) die('invalid call of '.$_SERVER['SCRIPT_NAME']);
  
-// include language file
+// include GENERAL language file
 if(!file_exists(WB_PATH .'/modules/kit_tools/languages/' .LANGUAGE .'.php')) {
 	require_once(WB_PATH .'/modules/kit_tools/languages/DE.php'); // Vorgabe: DE verwenden 
 }
@@ -20,9 +20,71 @@ else {
 	require_once(WB_PATH .'/modules/kit_tools/languages/' .LANGUAGE .'.php');
 }
 
+// include language file for flexTable
+if(!file_exists(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/' .LANGUAGE .'.php')) {
+	require_once(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/DE.php'); // Vorgabe: DE verwenden 
+	if (!defined('FLEX_TABLE_LANGUAGE')) define('FLEX_TABLE_LANGUAGE', 'DE'); // die Konstante gibt an in welcher Sprache flexTable aktuell arbeitet
+}
+else { 
+	require_once(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/' .LANGUAGE .'.php');
+	if (!defined('FLEX_TABLE_LANGUAGE')) define('FLEX_TABLE_LANGUAGE', LANGUAGE); // die Konstante gibt an in welcher Sprache flexTable aktuell arbeitet
+}
+
+require_once(WB_PATH.'/modules/kit_tools/class.droplets.php');
+require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.table.php');
+
 
 global $admin;
 
+$error = '';
+
+$tables = array('dbFlexTableCfg');
+foreach ($tables as $table) {
+	$create = null;
+	$create = new $table();
+	if (!$create->sqlTableExists()) {
+		if (!$create->sqlCreateTable()) {
+			$error .= sprintf('[ADD TABLE %s] %s', $table, $create->getError());
+		}
+	}
+}
+
+// Release 0.12
+$dbFlexTable = new dbFlexTable();
+if (!$dbFlexTable->sqlFieldExists(dbFlexTable::field_title)) {
+	$insert_fields = array(dbFlexTable::field_title, dbFlexTable::field_keywords);
+	foreach ($insert_fields as $iField) { 
+		if (!$dbFlexTable->sqlAlterTableAddField($iField, "VARCHAR(255) NOT NULL DEFAULT ''")) {
+			$error .= sprintf('[UPGRADE] %s', $dbFlexTable->getError());
+			break;
+		}
+	}
+}
+
+
+// remove Droplets
+$dbDroplets = new dbDroplets();
+$droplets = array('flex_table');
+foreach ($droplets as $droplet) {
+	$where = array(dbDroplets::field_name => $droplet);
+	if (!$dbDroplets->sqlDeleteRecord($where)) {
+		$message = sprintf('[UPGRADE] Error uninstalling Droplet: %s', $dbDroplets->getError());
+	}	
+}
+
+// Install Droplets
+$droplets = new checkDroplets();
+$droplets->droplet_path = WB_PATH.'/modules/flex_table/droplets/';
+
+if ($droplets->insertDropletsIntoTable()) {
+  $message = sprintf(tool_msg_install_droplets_success, 'flexTables');
+}
+else {
+  $message = sprintf(tool_msg_install_droplets_failed, 'flexTables', $droplets->getError());
+}
+if ($message != "") {
+  echo '<script language="javascript">alert ("'.$message.'");</script>';
+}
 
 // Prompt Errors
 if (!empty($error)) {

@@ -34,7 +34,7 @@ require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.table.php')
 
 global $admin;
 
-$tables = array('dbFlexTable', 'dbFlexTableDefinition', 'dbFlexTableRow', 'dbFlexTableCell');
+$tables = array('dbFlexTable', 'dbFlexTableDefinition', 'dbFlexTableRow', 'dbFlexTableCell', 'dbFlexTableCfg');
 $error = '';
 
 foreach ($tables as $table) {

@@ -3,6 +3,17 @@ flexTable
 Ralf Hertsch, Stockholmer Str. 31, 13359 Berlin (Germany)
 http://phpManufaktur.de - ralf.hertsch@phpManufaktur.de
 
+Release 0.12
+2011-07-03
+added: added free definable anchors for the templates
+added: integration in WebsiteBaker search
+added: setting page header informations for detail views
+added: configuration menu and settings
+
+Release 0.11
+2011-07-01
+Bugfixing of some smaller problems
+
 Release 0.10
 2011-06-28
 First Beta Release

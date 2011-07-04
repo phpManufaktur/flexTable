@@ -9,7 +9,7 @@
  *
  * Beispielseite fuer einen Katalog von Naturschutzmassnahmen
  *}
-<a name="ft"></a> 
+<a name="{$anchor.detail}"></a> 
 <div id="ft_detail_101">
   <h2>{$items.massnahme.value}</h2>
   {if isset($items.bild.media_data.url)}
@@ -29,5 +29,5 @@
   <p><em>{$items.schutzstatus.title}</em><br />{$items.schutzstatus.value}</p>
   <p><em>{$items.ansprechpartner.title}</em><br />{$items.ansprechpartner.value}</p>
    
-  <p><a href="{$link_back}">Zurück zur Übersichtstabelle...</a></p>
+  <p><a href="{$link_back}#{$anchor.table}">Zurück zur Übersichtstabelle...</a></p>
 </div>

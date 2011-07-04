@@ -8,7 +8,7 @@
  * @version $Id$
  *}
 <div id="ft_detail">
-  <a name="ft"></a>
+  <a name="{$anchor.detail}"></a>
   {foreach $items item}
   <div class="ft_item">
     {if $item.media_type == 'txt'}
@@ -20,5 +20,5 @@
     {/if}
   </div>
   {/foreach}
-  <p><a href="{$link_back}">Zurück...</a></p>
+  <p><a href="{$link_back}#{$anchor.table}">Zurück...</a></p>
 </div>

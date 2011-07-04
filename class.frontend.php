@@ -13,6 +13,7 @@
 if (!defined('WB_PATH')) die('invalid call of '.$_SERVER['SCRIPT_NAME']);
 
 require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/initialize.php');
+require_once(WB_PATH.'/modules/droplets_extension/interface.php');
 
 class tableFrontend {
 	
@@ -31,17 +32,22 @@ class tableFrontend {
 	private $media_url								= '';
 	private $media_path								= '';
 	
-	private $media_file_types					= array('jpg', 'jpeg', 'gif', 'png', 'tif', 'pdf');
-	private $media_image_types				= array('jpg', 'jpeg', 'gif', 'png', 'tif');
+	private $media_file_types					= array();
+	private $media_image_types				= array();
+	private $media_doc_types					= array();
 	
 	const param_preset									= 'preset';
 	const param_name										= 'name';
 	const param_css											= 'css';
+	const param_search									= 'search';
+	const param_page_header							= 'page_header';
 	
 	private $params = array(
 		self::param_preset										=> 1, 
 		self::param_name											=> '',
 		self::param_css												=> true,
+		self::param_search										=> true,
+		self::param_page_header								=> true
 	);
 	
 	const filter_none				= 'NONE';
@@ -50,15 +56,19 @@ class tableFrontend {
 	
 	public function __construct() {
 		global $kitLibrary;
+		global $dbFlexTableCfg;
 		$url = '';
 		$_SESSION['FRONTEND'] = true;	
 		$kitLibrary->getPageLinkByPageID(PAGE_ID, $url);
 		$this->page_link = $url; 
 		$this->template_path = WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/htt/'.$this->params[self::param_preset].'/'.FLEX_TABLE_LANGUAGE.'/' ;
 		$this->img_url = WB_URL. '/modules/'.basename(dirname(__FILE__)).'/images/';
-		$this->media_url = WB_URL.MEDIA_DIRECTORY.'/flex_table/';
-		$this->media_path = WB_PATH.MEDIA_DIRECTORY.'/flex_table/';
+		$this->media_url = WB_URL.MEDIA_DIRECTORY.'/'.$dbFlexTableCfg->getValue(dbFlexTableCfg::cfgMediaDirectory).'/';
+		$this->media_path = WB_PATH.MEDIA_DIRECTORY.'/'.$dbFlexTableCfg->getValue(dbFlexTableCfg::cfgMediaDirectory).'/';
 		date_default_timezone_set(tool_cfg_time_zone);
+		$this->media_doc_types = $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgImageFileTypes);
+		$this->media_image_types = $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgDocFileTypes);
+		$this->media_file_types = array_merge($this->media_image_types, $this->media_doc_types);
 	} // __construct()
 	
 	public function getParams() {
@@ -205,6 +215,28 @@ class tableFrontend {
     elseif (is_registered_droplet_css('flex_table', PAGE_ID)) {
 		  unregister_droplet_css('flex_table', PAGE_ID);
     }
+    // Register Droplet for the WebsiteBaker Search Function
+  	if ($this->params[self::param_search]) {
+  		if (!is_registered_droplet_search('flex_table', PAGE_ID)) {  
+	 			register_droplet_search('flex_table', PAGE_ID, 'flex_table');
+  		}
+ 		}
+ 		elseif (is_registered_droplet_search('flex_table', PAGE_ID)) {
+ 			unregister_droplet_search('flex_table', PAGE_ID);
+ 		}
+ 		
+ 		// Seiteninformationen bereitstellen?
+	  if ($this->params[self::param_page_header]) {
+	  	if (!is_registered_droplet_header('flex_table', PAGE_ID)) {
+ 				register_droplet_header('flex_table', PAGE_ID, 'flex_table');
+	  	}
+	  }
+	  else {
+	  	if (is_registered_droplet_header('flex_table', PAGE_ID)) {
+  			unregister_droplet_header('flex_table', PAGE_ID);
+			}
+	  }
+    
     
     switch ($action):
   	case self::action_detail:
@@ -227,6 +259,7 @@ class tableFrontend {
   	global $dbFlexTable;
   	global $dbFlexTableCell;
   	global $dbFlexTableDefinition;
+  	global $dbFlexTableCfg;
   	
   	if (empty($this->params[self::param_name])) {
   		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, ft_error_table_name_missing));
@@ -327,7 +360,9 @@ class tableFrontend {
   		'name'				=> $table[dbFlexTable::field_name],
   		'class'				=> $table[dbFlexTable::field_name],
   		'description'	=> $table[dbFlexTable::field_description],
-  		'definition'	=> $def_array
+  		'definition'	=> $def_array,
+  		'title'				=> $table[dbFlexTable::field_title],
+  		'keywords'		=> $table[dbFlexTable::field_keywords]
   	);
   	if ($active_filter_id == -1) {
 	  	$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s' AND %s='%s' ORDER BY %s ASC, FIND_IN_SET(%s, '%s')",
@@ -461,10 +496,10 @@ class tableFrontend {
 				'id'		=> $row[dbFlexTableCell::field_id],
 				'value'	=> $value,
 				'class'	=> $row[dbFlexTableCell::field_definition_name],
-				'link'	=> sprintf(	'%s%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
+				'link'	=> sprintf(	'%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
   													http_build_query(array(	self::request_action => self::action_detail,
   																									dbFlexTableRow::field_id => $row[dbFlexTableCell::field_row_id],
-  																									dbFlexTable::field_id => $row[dbFlexTableCell::field_table_id])), '#ft'),
+  																									dbFlexTable::field_id => $row[dbFlexTableCell::field_table_id]))),
   			'media_type'	=> $media_type,
   			'media_data'	=> $media_data
 			);
@@ -478,9 +513,11 @@ class tableFrontend {
 		}
 		
   	$data = array(
-  		'table'			=> $table_array,
-  		'rows'			=> $row_array,
-  		'page_link'	=> $this->page_link
+  		'table'					=> $table_array,
+  		'rows'					=> $row_array,
+  		'page_link'			=> $this->page_link,
+  		'anchor'				=> array(	'detail'	=> $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgAnchorDetail),
+  															'table'		=> $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgAnchorTable))
   	);
   	return $this->getTemplate('table.htt', $data);
   } // showTable()
@@ -489,6 +526,7 @@ class tableFrontend {
   	global $dbFlexTableCell;
   	global $dbFlexTable;
   	global $dbFlexTableDefinition;
+  	global $dbFlexTableCfg;
   	
   	$row_id = (isset($_REQUEST[dbFlexTableRow::field_id])) ? $_REQUEST[dbFlexTableRow::field_id] : -1;
   	if ($row_id < 1) {
@@ -501,8 +539,7 @@ class tableFrontend {
   		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, dt_error_table_id_missing));
   		return false;
   	}
-  	$SQL = sprintf( "SELECT %s FROM %s WHERE %s='%s'",
-  									dbFlexTable::field_definitions,
+  	$SQL = sprintf( "SELECT * FROM %s WHERE %s='%s'",
   									$dbFlexTable->getTableName(),
   									dbFlexTable::field_id,
   									$table_id);
@@ -516,6 +553,16 @@ class tableFrontend {
   		return false;
   	}
   	$table = $table[0];
+  	$table_array = array(
+  		'id'					=> $table[dbFlexTable::field_id],
+  		'name'				=> $table[dbFlexTable::field_name],
+  		'class'				=> $table[dbFlexTable::field_name],
+  		'description'	=> $table[dbFlexTable::field_description],
+  		'title'				=> $table[dbFlexTable::field_title],
+  		'keywords'		=> $table[dbFlexTable::field_keywords]
+  	);
+  	
+  	
   	$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s'ORDER BY FIND_IN_SET(%s, '%s')",
 										$dbFlexTableCell->getTableName(),
 										dbFlexTableCell::field_row_id,
@@ -586,15 +633,18 @@ class tableFrontend {
   			$dbFlexTableCell->template_names[dbFlexTableCell::field_timestamp] => $item[dbFlexTableCell::field_timestamp],
   			'value' => $value,
   			'media_type' => $media_type,
-  			'media_data'	=> $media_data
+  			'media_data'	=> $media_data,
   		);
   	}
 		
   	$data = array(
-  		'items'				=> $items_array,
-  		'link_back'		=> sprintf('%s%s', $this->page_link, '#ft')
-  	);
-  	return $this->getTemplate('detail.htt', $data);
+  		'table'					=> $table_array,
+  		'items'					=> $items_array,
+  		'link_back'			=> sprintf('%s', $this->page_link),
+  		'anchor'				=> array(	'detail'	=> $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgAnchorDetail),
+  															'table'		=> $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgAnchorTable))
+  	 );
+  	 return $this->getTemplate('detail.htt', $data);
   } // showDetail()
 	
 } // class tableFrontend

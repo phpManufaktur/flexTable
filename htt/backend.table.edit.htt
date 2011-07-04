@@ -33,9 +33,19 @@
         <td>{$table.name.hint}</td>
       </tr>
       <tr>
+        <td>{$table.title.label}</td>
+        <td><input type="text" name="{$table.title.name}" value="{$table.title.value}" /></td>
+        <td>{$table.title.hint}</td>
+      </tr>
+      <tr>
         <td>{$table.description.label}</td>
         <td><textarea name="{$table.description.name}">{$table.description.value}</textarea>
         <td>{$table.description.hint}</td>
+      </tr>
+      <tr>
+        <td>{$table.keywords.label}</td>
+        <td><textarea name="{$table.keywords.name}">{$table.keywords.value}</textarea>
+        <td>{$table.keywords.hint}</td>
       </tr>
       <tr><td colspan="3">&nbsp;</td></tr>
     </tbody>
