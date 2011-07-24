@@ -1,4 +1,5 @@
 <?php
+
 /**
  * flexTable
  * 
@@ -7,10 +8,27 @@
  * @copyright 2011
  * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
  * @version $Id$
+ * 
+ * FOR VERSION- AND RELEASE NOTES PLEASE LOOK AT INFO.TXT!
  */
 
-// prevent this file from being accessed directly
-if (!defined('WB_PATH')) die('invalid call of '.$_SERVER['SCRIPT_NAME']);
+// try to include LEPTON class.secure.php to protect this file and the whole CMS!
+if (defined('WB_PATH')) {	
+	if (defined('LEPTON_VERSION')) include(WB_PATH.'/framework/class.secure.php');
+} elseif (file_exists($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php')) {
+	include($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php'); 
+} else {
+	$subs = explode('/', dirname($_SERVER['SCRIPT_NAME']));	$dir = $_SERVER['DOCUMENT_ROOT'];
+	$inc = false;
+	foreach ($subs as $sub) {
+		if (empty($sub)) continue; $dir .= '/'.$sub;
+		if (file_exists($dir.'/framework/class.secure.php')) { 
+			include($dir.'/framework/class.secure.php'); $inc = true;	break; 
+		} 
+	}
+	if (!$inc) trigger_error(sprintf("[ <b>%s</b> ] Can't include LEPTON class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+}
+// end include LEPTON class.secure.php
 
 define('ft_btn_edit',														'Edit');
 
@@ -115,8 +133,12 @@ define('ft_msg_cell_head_empty',								'<p>Die Kopfzeile darf nicht leer sein!<
 define('ft_msg_cell_definition_updated',				'<p>Die Definition für das Datenfeld <b>ID %05d</b> wurde aktualisiert.</p>');
 define('ft_msg_cell_definition_removed',				'<p>Die Definition für das Datenfeld <b>ID %05d</b> wurde <b>gelöscht</b></p>');
 define('ft_msg_cell_updated',										'<p>Das Datenfeld <b>ID %5d</b> wurde aktualisiert.</p>');
+define('ft_msg_cells_copied_to_row',						'<p>Die Datenfelder <b>%s</b> aus der Zeile mit der <b>ID %05d</b> wurden in eine neue Zeile mit der <b>ID %05d</b> kopiert.</p>');
+define('ft_msg_permalink_created',							'<p>Der <b>permaLink %s</b> wurde angelegt und kann verwendet werden.</p>');
+define('ft_msg_permalink_deleted',							'<p>Der <b>permaLink %s</b> wurde gelöscht.</p>');
+define('ft_msg_permalink_missing_homepage',			'<p>In den Tabelleneigenschaften ist keine <b>Homepage</b> festgelegt, der <b>permaLink</b> kann nicht übernommen werden.<br />Definieren Sie eine Zielseite und versuchen Sie es dann erneut.</p>');
 define('ft_msg_row_copied',											'<p>Die Daten der Zeile <b>ID %05d</b> wurde in die neue Zeile <b>ID %05d</b> kopiert.</p>');
-define('ft_msg_row_deleted',										'<p>Die Zeile <b>ID %05d</b> wurde gelöscht.</p>');
+define('ft_msg_row_deleted',										'<p>Die Zeile mit der <b>ID %05d</b> wurde gelöscht.</p>');
 
 define('ft_tab_cfg',														'Einstellungen');
 define('ft_tab_edit',														'Bearbeiten');

@@ -4,9 +4,14 @@ Ralf Hertsch, Stockholmer Str. 31, 13359 Berlin (Germany)
 http://phpManufaktur.de - ralf.hertsch@phpManufaktur.de
 
 Release 0.13
-2011-07-
-added: EN.php - many thanks to Jochen Skibbe
+2011-07-24
+added: EN.php - many thanks to Jochen Skibbe for translation
 fixed: datetime fields doesn't work proper
+added: copy complete rows to a new row
+added: select columns of a row and copy them to a new row
+added: detail views can set title, description and keywords of the page
+changed table.htt: use now {if $row.permalink == ''}{$row.link}{else}{$row.permalink}{/if}#{$anchor.detail} instead of {$cell.link}
+changed: grant compatibillity for LEPTON CMS
 
 Release 0.12
 2011-07-03

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * flexTable
  * 
@@ -7,15 +8,33 @@
  * @copyright 2011
  * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
  * @version $Id$
+ * 
+ * FOR VERSION- AND RELEASE NOTES PLEASE LOOK AT INFO.TXT!
  */
 
-// prevent this file from being accessed directly
-if (!defined('WB_PATH')) die('invalid call of '.$_SERVER['SCRIPT_NAME']);
+// try to include LEPTON class.secure.php to protect this file and the whole CMS!
+if (defined('WB_PATH')) {	
+	if (defined('LEPTON_VERSION')) include(WB_PATH.'/framework/class.secure.php');
+} elseif (file_exists($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php')) {
+	include($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php'); 
+} else {
+	$subs = explode('/', dirname($_SERVER['SCRIPT_NAME']));	$dir = $_SERVER['DOCUMENT_ROOT'];
+	$inc = false;
+	foreach ($subs as $sub) {
+		if (empty($sub)) continue; $dir .= '/'.$sub;
+		if (file_exists($dir.'/framework/class.secure.php')) { 
+			include($dir.'/framework/class.secure.php'); $inc = true;	break; 
+		} 
+	}
+	if (!$inc) trigger_error(sprintf("[ <b>%s</b> ] Can't include LEPTON class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+}
+// end include LEPTON class.secure.php
 
 require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/initialize.php');
 require_once(WB_PATH.'/framework/functions.php');
 require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.editor.php');
 require_once(WB_PATH.'/modules/perma_link/class.interface.php');
+require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.frontend.php');
 
 class tableBackend {
 	
@@ -602,6 +621,67 @@ class tableBackend {
 		return $this->getTemplate('backend.table.edit.htt', $data);
 	} // dlgEdit()
 	
+	private function checkPermaLink($homepage, $row_id, $table_id, $old_perma_link, &$new_perma_link, &$message) {
+		
+		$permaLink = new permaLink();
+		if (!empty($new_perma_link) && empty($homepage)) {
+			// es ist keine Homepage angegeben, permaLink wird nicht uebernommen
+			$new_perma_link = '';
+			$message .= ft_msg_permalink_missing_homepage;
+			return false;
+		}
+		else {
+			// es kann ein permaLink verwendet werden
+			$create_permaLink = false;
+			$delete_permaLink = false;
+			// URL fuer die Detailseite zusammenstellen
+			$url = sprintf(	'%s%s%s?%s',
+											WB_URL,	PAGES_DIRECTORY, 
+											$homepage,
+											http_build_query(array(	tableFrontend::request_action 	=> tableFrontend::action_detail,
+											 												dbFlexTableRow::field_id 				=> $row_id,
+											 												dbFlexTableRow::field_table_id	=> $table_id)));
+			if (empty($old_perma_link) && !empty($new_perma_link)) {
+				// neuen permaLink anlegen
+				$create_permaLink = true; 
+			}	
+			elseif(!empty($old_perma_link) && !empty($new_perma_link) && ($old_perma_link != $new_perma_link)) {
+				// permaLink hat sich geaendert
+				$delete_permaLink = true;
+				$create_permaLink = true;
+			}
+			elseif (!empty($old_perma_link) && empty($new_perma_link)) {
+				// permaLink soll geloescht werden
+				$delete_permaLink = true;
+			}
+		}
+
+		if ($delete_permaLink) {
+			// permaLink loeschen
+			if (!$permaLink->deletePermaLink($old_perma_link)) {
+				$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $permaLink->getError()));
+				return false;
+			}
+			$message .= sprintf(ft_msg_permalink_deleted, $old_perma_link);
+		}
+		
+		if ($create_permaLink) {
+			// neuen permaLink anlegen
+			if (!$permaLink->createPermaLink($url, $new_perma_link, 'flexTable', dbPermaLink::type_addon, $pid, permaLink::use_request)) {
+				if ($permaLink->isError()) {
+					$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $permaLink->getError()));
+					return false;
+				}
+				$message .= $permaLink->getMessage();
+				// permaLink zuruecksetzen
+				$new_perma_link = '';
+			}
+			else {
+				$message .= sprintf(ft_msg_permalink_created, $new_perma_link);
+			}
+		}
+	} // checkPermaLink()
+	
 	public function checkEdit() { 
 		
 		global $dbFlexTable;
@@ -654,6 +734,7 @@ class tableBackend {
 			case dbFlexTable::field_title:
 			case dbFlexTable::field_keywords:
 			case dbFlexTable::field_description:
+			case dbFlexTable::field_homepage:
 				$table[$field] = isset($_REQUEST[$field]) ? $_REQUEST[$field] : '';
 				break;
 			case dbFlexTable::field_name:
@@ -948,6 +1029,7 @@ class tableBackend {
 		}
 		// neue Zeilen hinzufuegen oder bestehende Zeilen bearbeiten?
 		if (isset($_REQUEST[self::request_edit_detail]) && $_REQUEST[self::request_edit_detail] > 0) {
+			// es wird eine bestehende Zeile bearbeitet
 			$row_id = $_REQUEST[self::request_edit_detail];
 			unset($_REQUEST[self::request_edit_detail]);
 			$edit = true;
@@ -975,14 +1057,8 @@ class tableBackend {
 				if (isset($_REQUEST[sprintf('cell_%s', $def_id)])) {
 					$value = $_REQUEST[sprintf('cell_%s', $def_id)];
 					if ($data[dbFlexTableCell::field_definition_name] == 'permalink') {
-						$permaLink = new permaLink();
-						// permaLink
-						if (empty($data[dbFlexTableCell::field_char]) && !empty($value)) {
-							// neuen permaLink anlegen
-							
-						}
-						//		(!empty($data[dbFlexTableCell::field_char]) && !empty($value) && ($data[dbFlexTableCell::field_char] != $value)))
-						//echo "pl: ".$data[dbFlexTableCell::field_char];		
+						// permaLink pruefen
+						if (!$this->checkPermaLink($table[dbFlexTable::field_homepage], $row_id, $table_id, $data[dbFlexTableCell::field_char], $value, $message) && $this->isError()) return false;
 					}
 					$dbFlexTableCell->setCellValueByType($data, $value);
 					$where = array(dbFlexTableCell::field_id => $data[dbFlexTableCell::field_id]);
@@ -1013,6 +1089,7 @@ class tableBackend {
 				}
 				$add = false;
 				$new_row_id = -1;
+				$copied_cells = array();
 				foreach ($cells as $cell) {
 					$def_id = $cell[dbFlexTableCell::field_definition_id];
 					if ($add == false) {
@@ -1053,6 +1130,7 @@ class tableBackend {
 							// take the value?
 							if (in_array($def_id, $copy_cells)) {
 								$data[$key] = $cell[$key];
+								if (!in_array($cell[dbFlexTableCell::field_definition_name], $copied_cells)) $copied_cells[] = $cell[dbFlexTableCell::field_definition_name];
 							}
 							else {
 								$dbFlexTableCell->setCellValueByType($data, '');
@@ -1063,19 +1141,14 @@ class tableBackend {
 						$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
 						return false;
 					}
-					
 				}
-				$message .= 'kopiert';//sprintf(ft_msg_row_copied, $row[dbFlexTableRow::field_id], $new_row_id);
-				// Zeile kopieren
-			
-				
-				
-				
-				
-				
+				// Benachrichtigung zusammenstellen
+				$copied_names = implode(', ', $copied_cells);
+				$message .= sprintf(ft_msg_cells_copied_to_row, $copied_names, $row_id, $new_row_id);
 			}
 		} // EDIT ROW
 		else {
+			// es wird eine neue Zeile eingefuegt
 			$data = array();
 			$add = false;
 			$row_id = -1;
@@ -1109,8 +1182,11 @@ class tableBackend {
 						dbFlexTableCell::field_row_id => $row_id,
 						dbFlexTableCell::field_table_id => $table_id
 					);
+					if ($data[dbFlexTableCell::field_definition_name] == 'permalink') {
+						// permaLink pruefen
+						if (!$this->checkPermaLink($table[dbFlexTable::field_homepage], $row_id, $table_id, '', $value, $message) && $this->isError()) return false;
+					}
 					$dbFlexTableCell->setCellValueByType($data, $value);
-					print_r($data);
 					if (!$dbFlexTableCell->sqlInsertRecord($data)) {
 						$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
 						return false;

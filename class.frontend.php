@@ -365,12 +365,14 @@ class tableFrontend {
   		'keywords'		=> $table[dbFlexTable::field_keywords]
   	);
   	if ($active_filter_id == -1) {
-	  	$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s' AND %s='%s' ORDER BY %s ASC, FIND_IN_SET(%s, '%s')",
+	  	$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s' AND (%s='%s' OR %s='%s') ORDER BY %s ASC, FIND_IN_SET(%s, '%s')",
 											$dbFlexTableCell->getTableName(),
 											dbFlexTableCell::field_table_id,
 											$table_id,
 											dbFlexTableCell::field_table_cell,
 											dbFlexTableDefinition::cell_true,
+											dbFlexTableCell::field_definition_name,
+											'permalink',
 											dbFlexTableCell::field_row_id,
 											dbFlexTableCell::field_definition_id,
 											$table[dbFlexTable::field_definitions]
@@ -404,12 +406,14 @@ class tableFrontend {
 					if (!empty($row_order)) $row_order .= ',';
 					$row_order .= $ord[dbFlexTableCell::field_row_id];
 				}
-				$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s' AND %s='%s' ORDER BY FIND_IN_SET(%s, '%s'), FIND_IN_SET(%s, '%s')",
+				$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s' AND (%s='%s' OR %s='%s') ORDER BY FIND_IN_SET(%s, '%s'), FIND_IN_SET(%s, '%s')",
 												$dbFlexTableCell->getTableName(),
 												dbFlexTableCell::field_table_id,
 												$table_id,
 												dbFlexTableCell::field_table_cell,
 												dbFlexTableDefinition::cell_true,
+												dbFlexTableCell::field_definition_name,
+												'permalink',
 												dbFlexTableCell::field_row_id,
 												$row_order,
 												dbFlexTableCell::field_definition_id,
@@ -436,12 +440,14 @@ class tableFrontend {
 					if (!empty($row_order)) $row_order .= ',';
 					$row_order .= "'".$ord[dbFlexTableCell::field_row_id]."'";
 				}
-				$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s' AND %s='%s' AND %s IN (%s) ORDER BY %s ASC, FIND_IN_SET(%s, '%s')",
+				$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s' AND (%s='%s' OR %s='%s') AND %s IN (%s) ORDER BY %s ASC, FIND_IN_SET(%s, '%s')",
 												$dbFlexTableCell->getTableName(),
 												dbFlexTableCell::field_table_id,
 												$table_id,
 												dbFlexTableCell::field_table_cell,
 												dbFlexTableDefinition::cell_true,
+												dbFlexTableCell::field_definition_name,
+												'permalink',
 												dbFlexTableCell::field_row_id,
 												$row_order,
 												dbFlexTableCell::field_row_id,
@@ -459,17 +465,32 @@ class tableFrontend {
 		$row_array = array();
 		$cells = array();
 		$row_id = -1;
+		$permalink = '';
+//echo "<pre>";		
+//print_r($rows);
+//echo "</pre>";		
 		foreach ($rows as $row) {
 			if ($row_id == -1) $row_id = $row[dbFlexTableCell::field_row_id];
 			if ($row_id != $row[dbFlexTableCell::field_row_id]) {
 				$row_array[$row_id] = array(
-					'id'		=> $row_id,
-					'cells'	=> $cells
+					'id'				=> $row_id,
+					'cells'			=> $cells,
+					'link'			=> sprintf(	'%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
+  																http_build_query(array(	self::request_action => self::action_detail,
+  																												dbFlexTableRow::field_id => $row[dbFlexTableCell::field_row_id],
+  																												dbFlexTable::field_id => $row[dbFlexTableCell::field_table_id]))),
+  				'permalink'	=> $permalink
 				);
 				$row_id = $row[dbFlexTableCell::field_row_id];
 				$cells = array();
+				$permalink = '';
 			}
 			$value = $dbFlexTableCell->getCellValueByType($row);
+			if (($row[dbFlexTableCell::field_definition_name] == 'permalink') && !empty($value)) {
+				// permalink
+				$permalink = WB_URL.PAGES_DIRECTORY.$value;
+				continue;
+			}
 			if (($row[dbFlexTableCell::field_definition_type] == dbFlexTableDefinition::type_media_link) && 
 					(!empty($value))) {
 				$ext = strtolower(pathinfo($this->media_path.$value, PATHINFO_EXTENSION));
@@ -496,10 +517,12 @@ class tableFrontend {
 				'id'		=> $row[dbFlexTableCell::field_id],
 				'value'	=> $value,
 				'class'	=> $row[dbFlexTableCell::field_definition_name],
+			/*
 				'link'	=> sprintf(	'%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
   													http_build_query(array(	self::request_action => self::action_detail,
   																									dbFlexTableRow::field_id => $row[dbFlexTableCell::field_row_id],
   																									dbFlexTable::field_id => $row[dbFlexTableCell::field_table_id]))),
+  		*/
   			'media_type'	=> $media_type,
   			'media_data'	=> $media_data
 			);
@@ -508,7 +531,12 @@ class tableFrontend {
 		if ($row_id != -1) {
 			$row_array[$row_id] = array(
 				'id'		=> $row_id,
-				'cells'	=> $cells
+				'cells'	=> $cells,
+				'link'	=> sprintf(	'%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
+  													http_build_query(array(	self::request_action => self::action_detail,
+  																									dbFlexTableRow::field_id => $row[dbFlexTableCell::field_row_id],
+  																									dbFlexTable::field_id => $row[dbFlexTableCell::field_table_id]))),
+  			'permalink'	=> $permalink
 			);
 		}
 		

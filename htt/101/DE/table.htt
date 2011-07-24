@@ -33,7 +33,7 @@
         {$i=1}
         {foreach $row.cells cell}
         <td class="{$cell.class}">
-          {if $i==3}<a href="{$cell.link}#{$anchor.detail}">{$cell.value}</a>
+          {if $i==3}<a href="{if $row.permalink == ''}{$row.link}{else}{$row.permalink}{/if}#{$anchor.detail}">{$cell.value}</a>
           {elseif $cell.media_type == 'txt'}
             {$cell.value}
           {elseif $cell.media_type == 'pdf'}
