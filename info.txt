@@ -10,6 +10,7 @@ fixed: datetime fields doesn't work proper
 added: copy complete rows to a new row
 added: select columns of a row and copy them to a new row
 added: detail views can set title, description and keywords of the page
+added: uses permaLink for creating real permanent links for the detail views of the items
 changed table.htt: use now {if $row.permalink == ''}{$row.link}{else}{$row.permalink}{/if}#{$anchor.detail} instead of {$cell.link}
 changed: grant compatibillity for LEPTON CMS
 
