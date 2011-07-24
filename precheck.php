@@ -35,12 +35,12 @@ if (defined('WB_PATH')) {
 $PRECHECK['WB_VERSION'] = array('VERSION' => '2.8', 'OPERATOR' => '>=');
 $PRECHECK['PHP_VERSION'] = array('VERSION' => '5.2.0', 'OPERATOR' => '>=');
 $PRECHECK['WB_ADDONS'] = array(
-	'dbconnect_le'	=> array('VERSION' => '0.64', 'OPERATOR' => '>='),
-	'dwoo' => array('VERSION' => '0.10', 'OPERATOR' => '>='),
+	'dbconnect_le'	=> array('VERSION' => '0.65', 'OPERATOR' => '>='),
+	'dwoo' => array('VERSION' => '0.11', 'OPERATOR' => '>='),
 	'droplets' => array('VERSION' => '1.0', 'OPERATOR' => '>='),
-	'droplets_extension' => array('VERSION' => '0.11', 'OPERATOR' => '>='),
-	'kit_tools' => array('VERSION' => '0.11', 'OPRATOR' => '>='),
-	'perma_link' => array('VERSION' => '0.10', 'OPERATOR' => '>=')
+	'droplets_extension' => array('VERSION' => '0.16', 'OPERATOR' => '>='),
+	'kit_tools' => array('VERSION' => '0.14', 'OPRATOR' => '>='),
+	'perma_link' => array('VERSION' => '0.11', 'OPERATOR' => '>=')
 );
 
 global $database;  
