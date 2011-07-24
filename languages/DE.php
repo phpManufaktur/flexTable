@@ -64,6 +64,7 @@ define('ft_hint_ftd_title',											'Die Überschrift wird auf der Detailseite
 define('ft_hint_ftd_type',											'');
 define('ft_hint_ft_defs',												'');
 define('ft_hint_ft_desc',												'Die Beschreibung der Tabelle wird von flexTable für die Seitenbeschreibung verwendet und steht als Parameter in den Templates zur Verfügung.');
+define('ft_hint_ft_homepage',										'Teilen Sie <b>flexTable</b> mit, auf welcher Seite Sie das Droplet für die Anzeige der Tabelle verwenden. Diese Information wird benötigt, damit <b>flexTable</b> mit Hilfe von <b>permaLink</b> <i>permanente Links</i> für die Detailseiten anlegen kann.');
 define('ft_hint_ft_id',													'');
 define('ft_hint_ft_title',											'Der Titel wird von flexTable für das Setzen von Seitentiteln verwendet und steht als Parameter in den Templates zur Verfügung.');
 define('ft_hint_ft_keywords',										'Die Schlüsselwörter werden von flexTable ergänzend zur Seitenbeschreibung verwendet.');
@@ -72,10 +73,10 @@ define('ft_hint_ft_stamp',											'');
 
 define('ft_intro_table_edit',										'Erstellen oder bearbeiten Sie die Tabelle nach ihren Wünschen.');
 define('ft_intro_table_list',										'Klicken Sie auf den Bezeichner einer Tabelle um diese zu bearbeiten. Wählen Sie <b>Bearbeiten</b> um eine neue Tabelle zu erstellen.');
-define('ft_intro_definition_sort',							'Fügen Sie weitere Datenfelder hinzu und sortieren Sie die gewünschte Reihenfolge durch Drag & Drop.');
-define('ft_intro_row_add',											'Fügen Sie der Tabelle einen weiteren Eintrag hinzu, in dem Sie die folgenden Datenfelder ausfüllen und auf <i>Übernehmen</i> klicken.<br /><b>Wichtig:</b> Das erste Feld darf nicht leer sein, sonst wird der Datensatz nicht übernommen.');
+define('ft_intro_definition_sort',							'<p>Fügen Sie weitere Datenfelder hinzu und sortieren Sie die gewünschte Reihenfolge durch Drag & Drop.</p><p><b>Hinweis:</b> Datenfelder vom Typ <i>Zeichenkette</i> mit den Bezeichnern <b>title</b>, <b>description</b> und <b>keywords</b> werden von <b>flexTable</b> verwendet um auf Detailseiten den Seitentitel, die Kurzbeschreibung sowie Schlüsselwörter zu setzen.<br />Ein Datenfeld vom Typ <i>Zeichenkette</i> mit dem Bezeichner <b>permalink</b> wird von <b>flexTable</b> verwendet um den angegebenen <i>permanenten Link</i> auf die jeweilige Detailseite zu setzen.</p>');
+define('ft_intro_row_add',											'<p>Fügen Sie der Tabelle einen weiteren Eintrag hinzu, in dem Sie die folgenden Datenfelder ausfüllen und auf <i>Übernehmen</i> klicken.<br /><b>Wichtig:</b> Das erste Feld darf nicht leer sein, sonst wird der Datensatz nicht übernommen.</p><p>Wenn Sie einen Eintrag aus der Tabelle bearbeiten, können Sie rechts einzelne Felder als <b>Copy</b> markieren. Mit <i>Übernehmen</i> fügt <b>flexTable</b> eine neue Zeile in die Tabelle ein und übernimmt die Inhalte der markierten Felder.</p>');
 define('ft_intro_row_edit',											'Sie bearbeiten den existieren Eintrag <b>ID %05d</b>!<br />Führen Sie die gewünschten Änderungen durch und klicken Sie anschließend auf <b>Übernehmen</b>.');
-define('ft_intro_rows_list',										'Um die Inhalte eines Eintrag zu ändern klicken Sie auf <b>Edit</b>, um einen Eintrag zu entfernen setzen sie ein Häkchen die Checkbox und klicken Sie anschließend auf <b>Übernehmen</b>.');
+define('ft_intro_rows_list',										'Um die Inhalte eines Eintrag zu ändern klicken Sie auf <b>Edit</b>, um eine Zeile zu löschen entfernen Sie das Häkchen in der Spalte <b>Actice</b>.</p><p>Um die Inhalte einer Zeile (auch die nicht in der Tabelle angezeigten) in eine neue Zeile zu kopieren, setzen Sie ein Häkchen bei <b>Copy</b> und klicken Sie anschließend auf <b>Übernehmen</b>.</p>');
 
 define('ft_label_add_definition',								'Datenfeld hinzufügen');
 define('ft_label_cfg_exec',											'flexTable ausführen');
@@ -95,6 +96,7 @@ define('ft_label_ftd_title',										'Überschrift');
 define('ft_label_ftd_type',											'Datentyp');
 define('ft_label_ft_defs',											'Datenfelder definieren');
 define('ft_label_ft_desc',											'Beschreibung');
+define('ft_label_ft_homepage',									'Homepage');
 define('ft_label_ft_id',												'ID');
 define('ft_label_ft_title',											'Titel der Tabelle');
 define('ft_label_ft_keywords',									'Schlüselwörter');
@@ -113,6 +115,7 @@ define('ft_msg_cell_head_empty',								'<p>Die Kopfzeile darf nicht leer sein!<
 define('ft_msg_cell_definition_updated',				'<p>Die Definition für das Datenfeld <b>ID %05d</b> wurde aktualisiert.</p>');
 define('ft_msg_cell_definition_removed',				'<p>Die Definition für das Datenfeld <b>ID %05d</b> wurde <b>gelöscht</b></p>');
 define('ft_msg_cell_updated',										'<p>Das Datenfeld <b>ID %5d</b> wurde aktualisiert.</p>');
+define('ft_msg_row_copied',											'<p>Die Daten der Zeile <b>ID %05d</b> wurde in die neue Zeile <b>ID %05d</b> kopiert.</p>');
 define('ft_msg_row_deleted',										'<p>Die Zeile <b>ID %05d</b> wurde gelöscht.</p>');
 
 define('ft_tab_cfg',														'Einstellungen');
@@ -120,7 +123,10 @@ define('ft_tab_edit',														'Bearbeiten');
 define('ft_tab_list',														'Liste');
 define('ft_tab_about',													'?');
 
+define('ft_text_active',												'Active');
+define('ft_text_copy',													'Copy');
 define('ft_text_select_file',										'- Datei auswählen -');
+define('ft_text_select_page',										'- Seite auswählen -');
 define('ft_text_table_delete',									'Tabelle löschen');
 
 define('ft_th_id',															'ID');

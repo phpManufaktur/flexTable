@@ -15,6 +15,7 @@ if (!defined('WB_PATH')) die('invalid call of '.$_SERVER['SCRIPT_NAME']);
 require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/initialize.php');
 require_once(WB_PATH.'/framework/functions.php');
 require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.editor.php');
+require_once(WB_PATH.'/modules/perma_link/class.interface.php');
 
 class tableBackend {
 	
@@ -96,8 +97,8 @@ class tableBackend {
   /**
    * Reset Error to empty String
    */
-  public function clearError() {
-  	$this->error = '';
+  public function clearError() { 
+  	$this->error = ''; 
   }
 
   /** Set $this->message to $message
@@ -289,6 +290,7 @@ class tableBackend {
 		global $dbFlexTableDefinition;
 		global $dbFlexTableRow;
 		global $dbFlexTableCell;
+		global $database;
 		
 		if (!file_exists($this->media_path)) {
 			if (!mkdir($this->media_path, 0755)) {
@@ -319,11 +321,38 @@ class tableBackend {
 			$table[dbFlexTable::field_id] = -1;
 		}
 		
+		// page_extension ermitteln
+		$SQL = sprintf("SELECT value FROM %ssettings WHERE name='page_extension'", TABLE_PREFIX);
+		if (false === ($page_extension = $database->get_one($SQL, MYSQL_ASSOC))) {
+			$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+			return false;
+		}
+
+		// Seiten ermitteln
+		$SQL = sprintf("SELECT link FROM %spages ORDER BY link ASC", TABLE_PREFIX);
+		if (false === ($query = $database->query($SQL))) {
+			$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $database->get_error()));
+			return false;
+		}
+		$pages_array = array();
+		$pages_array[] = array(
+			'key'		=> '',
+			'value'	=> ft_text_select_page
+		);
+		while (false !== ($page = $query->fetchRow())) {
+			$pages_array[] = array(
+				'key'		=> $page['link'].$page_extension,
+				'value'	=> $page['link'].$page_extension
+			); 
+		}
+		
 		$table_fields = array();
 		foreach ($table as $key => $value) {
+			$options = ($key == dbFlexTable::field_homepage) ? $pages_array : ''; 
 			$table_fields[$dbFlexTable->template_names[$key]] = array(
 				'name'			=> $key,
 				'value'			=> $value,
+				'options'		=> $options,
 				'hint'			=> constant(sprintf('ft_hint_%s', $key)),
 				'label'			=> constant(sprintf('ft_label_%s', $key))
 			);
@@ -429,7 +458,8 @@ class tableBackend {
 					'link'	=> sprintf(	'%s%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
   														http_build_query(array(	self::request_edit_detail => $row_id,
   																										self::request_action => self::action_edit,
-  																										dbFlexTable::field_id => $table_id)), '#fte')
+  																										dbFlexTable::field_id => $table_id)), '#fte'),
+					'copy'	=> sprintf('copy_row_%d', $row_id)    																										
 				);
 				$row_id = $row[dbFlexTableCell::field_row_id];
 				$cells = array();
@@ -459,7 +489,8 @@ class tableBackend {
 					'link'	=> sprintf(	'%s%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
   														http_build_query(array(	self::request_edit_detail => $row_id,
   																										self::request_action => self::action_edit,
-  																										dbFlexTable::field_id => $table_id)), '#fte')
+  																										dbFlexTable::field_id => $table_id)), '#fte'),
+					'copy'	=> sprintf('copy_row_%d', $row_id)  																										
 				);
 		}
 	
@@ -527,7 +558,10 @@ class tableBackend {
 				'name'		=> sprintf('cell_%s', $def[dbFlexTableDefinition::field_id]),
 				'type'		=> $dbFlexTableDefinition->template_type_array[$def[dbFlexTableDefinition::field_type]],
 				'value'		=> $value,
-				'head'		=> $def[dbFlexTableDefinition::field_head]
+				'head'		=> $def[dbFlexTableDefinition::field_head],
+				'copy'		=> array(	'name' 		=> sprintf('copy_cell_%d', $def[dbFlexTableDefinition::field_id]),
+														'value'		=> 1,
+														'active'	=> ($edit) ? 1 : 0)
 			);
 		}
 		
@@ -557,6 +591,8 @@ class tableBackend {
 			'intro_rows_add'		=> $edit ? sprintf(ft_intro_row_edit, $_REQUEST[self::request_edit_detail]) : ft_intro_row_add,
 			'intro_rows_list'		=> ft_intro_rows_list,
 			'edit_row'					=> $edit_row,
+			'text_active'				=> ft_text_active,
+			'text_copy'					=> ft_text_copy,
 			'rows'							=> $row_array,
 			'table_delete'			=> $table_delete,
 			'edit_detail'				=> array(	'name' => self::request_edit_detail,
@@ -566,7 +602,8 @@ class tableBackend {
 		return $this->getTemplate('backend.table.edit.htt', $data);
 	} // dlgEdit()
 	
-	public function checkEdit() {
+	public function checkEdit() { 
+		
 		global $dbFlexTable;
 		global $dbFlexTableDefinition;
 		global $dbFlexTableRow;
@@ -705,7 +742,7 @@ class tableBackend {
 			if (isset($_REQUEST[sprintf('%s_%s', self::request_active_definition, $def_id)])) {
 				// ok - Datensatz pruefen
 				$checked = true;
-				foreach ($dbFlexTableDefinition->getFields() as $field => $value) {
+				foreach ($dbFlexTableDefinition->getFields() as $field => $value) { 
 					switch ($field):
 					case dbFlexTableDefinition::field_name:
 						if (empty($_REQUEST[sprintf('%s_%s', $field, $def_id)])) {
@@ -834,7 +871,6 @@ class tableBackend {
 			// Mitteilung
 			$message .= ft_msg_cell_definition_added;			 
 		}
-		
 		// Zeilen durchlaufen und auf Aenderungen pruefen
 		$where = array(dbFlexTableRow::field_table_id => $table_id);
 		$rows = array();
@@ -859,16 +895,70 @@ class tableBackend {
 				}
 				$message .= sprintf(ft_msg_row_deleted, $row_id);
 			}
+			if (isset($_REQUEST[sprintf('copy_row_%s', $row[dbFlexTableRow::field_id])])) {
+				// Zeile kopieren
+				$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s' ORDER BY FIND_IN_SET(%s, '%s')", 
+												$dbFlexTableCell->getTableName(),
+												dbFlexTableCell::field_row_id,
+												$row[dbFlexTableRow::field_id],
+												dbFlexTableCell::field_definition_id,
+												$table[dbFlexTable::field_definitions]);
+				$cells = array();
+				if (!$dbFlexTableCell->sqlExec($SQL, $cells)) {
+					$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
+					return false;
+				}
+				$add = false;
+				$new_row_id = -1;
+				foreach ($cells as $cell) {
+					$def_id = $cell[dbFlexTableCell::field_definition_id];
+					if ($add == false) {
+						// neue Zeile einfuegen
+						$data = array(dbFlexTableRow::field_table_id => $table_id);
+						if (!$dbFlexTableRow->sqlInsertRecord($data, $new_row_id)) {
+							$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableRow->getError()));
+							return false;
+						}
+						$add = true;
+					}
+					$data = array();
+					foreach ($dbFlexTableCell->getFields() as $key => $value) {
+						switch ($key):
+						case dbFlexTableCell::field_id:
+						case dbFlexTableCell::field_timestamp:
+							// nothing to do...
+							break;
+						case dbFlexTableCell::field_row_id:
+							// use new row ID
+							$data[$key] = $new_row_id; 
+							break;
+						default:
+							// take the old values
+							$data[$key] = $cell[$key];
+						endswitch;
+					}
+					if (!$dbFlexTableCell->sqlInsertRecord($data)) {
+						$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
+						return false;
+					}
+				}
+				$message .= sprintf(ft_msg_row_copied, $row[dbFlexTableRow::field_id], $new_row_id);
+				// Zeile kopieren
+			}
 		}
-		// neue Zeilen hinzufuegen?
+		// neue Zeilen hinzufuegen oder bestehende Zeilen bearbeiten?
 		if (isset($_REQUEST[self::request_edit_detail]) && $_REQUEST[self::request_edit_detail] > 0) {
+			$row_id = $_REQUEST[self::request_edit_detail];
+			unset($_REQUEST[self::request_edit_detail]);
 			$edit = true;
+			$copy = false;
+			$copy_cells = array();
 			$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s' AND %s='%s' ORDER BY FIND_IN_SET(%s, '%s')",
 											$dbFlexTableCell->getTableName(),
 											dbFlexTableCell::field_table_id,
 											$table_id,
 											dbFlexTableCell::field_row_id,
-											$_REQUEST[self::request_edit_detail],
+											$row_id,
 											dbFlexTableCell::field_definition_id,
 											$table[dbFlexTable::field_definitions]
 										);
@@ -877,7 +967,6 @@ class tableBackend {
 				$this->setError(sprintf('[%s - %] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
 				return false;
 			}
-			unset($_REQUEST[self::request_edit_detail]);
 			$i = 0;
 			foreach ($definitions as $definition) {
 				$def_id = $definition[dbFlexTableDefinition::field_id];
@@ -885,16 +974,107 @@ class tableBackend {
 				$i++;
 				if (isset($_REQUEST[sprintf('cell_%s', $def_id)])) {
 					$value = $_REQUEST[sprintf('cell_%s', $def_id)];
+					if ($data[dbFlexTableCell::field_definition_name] == 'permalink') {
+						$permaLink = new permaLink();
+						// permaLink
+						if (empty($data[dbFlexTableCell::field_char]) && !empty($value)) {
+							// neuen permaLink anlegen
+							
+						}
+						//		(!empty($data[dbFlexTableCell::field_char]) && !empty($value) && ($data[dbFlexTableCell::field_char] != $value)))
+						//echo "pl: ".$data[dbFlexTableCell::field_char];		
+					}
 					$dbFlexTableCell->setCellValueByType($data, $value);
 					$where = array(dbFlexTableCell::field_id => $data[dbFlexTableCell::field_id]);
 					if (!$dbFlexTableCell->sqlUpdateRecord($data, $where)) {
 						$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
 						return false;
 					}
-					//$message .= 'aktualisiert';
+					if (isset($_REQUEST[sprintf('copy_cell_%d', $def_id)])) {
+						// Zelle kopieren
+						$copy = true;
+						$copy_cells[] = $def_id;
+					}
+					
 				}
+			} // foreach
+			if ($copy) {
+				// einzelne Zellen in eine neue Zeile uebernehmen
+				$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s' ORDER BY FIND_IN_SET(%s, '%s')", 
+												$dbFlexTableCell->getTableName(),
+												dbFlexTableCell::field_row_id,
+												$row_id,
+												dbFlexTableCell::field_definition_id,
+												$table[dbFlexTable::field_definitions]);
+				$cells = array();
+				if (!$dbFlexTableCell->sqlExec($SQL, $cells)) {
+					$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
+					return false;
+				}
+				$add = false;
+				$new_row_id = -1;
+				foreach ($cells as $cell) {
+					$def_id = $cell[dbFlexTableCell::field_definition_id];
+					if ($add == false) {
+						// neue Zeile einfuegen
+						$data = array(dbFlexTableRow::field_table_id => $table_id);
+						if (!$dbFlexTableRow->sqlInsertRecord($data, $new_row_id)) {
+							$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableRow->getError()));
+							return false;
+						}
+						$add = true;
+					}
+					$data = array();
+					foreach ($dbFlexTableCell->getFields() as $key => $value) {
+						switch ($key):
+						case dbFlexTableCell::field_id:
+						case dbFlexTableCell::field_timestamp:
+							// nothing to do...
+							break;
+						case dbFlexTableCell::field_row_id:
+							// use new row ID
+							$data[$key] = $new_row_id; 
+							break;
+						case dbFlexTableCell::field_definition_id:
+						case dbFlexTableCell::field_definition_name:
+						case dbFlexTableCell::field_definition_type:
+						case dbFlexTableCell::field_row_id:
+						case dbFlexTableCell::field_table_cell:
+						case dbFlexTableCell::field_table_id:
+							$data[$key] = $cell[$key];
+							break;
+						case dbFlexTableCell::field_char:
+						case dbFlexTableCell::field_datetime:
+						case dbFlexTableCell::field_float:
+						case dbFlexTableCell::field_html:
+						case dbFlexTableCell::field_integer:
+						case dbFlexTableCell::field_media_link:
+						case dbFlexTableCell::field_text:	
+							// take the value?
+							if (in_array($def_id, $copy_cells)) {
+								$data[$key] = $cell[$key];
+							}
+							else {
+								$dbFlexTableCell->setCellValueByType($data, '');
+							}
+						endswitch;
+					}
+					if (!$dbFlexTableCell->sqlInsertRecord($data)) {
+						$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
+						return false;
+					}
+					
+				}
+				$message .= 'kopiert';//sprintf(ft_msg_row_copied, $row[dbFlexTableRow::field_id], $new_row_id);
+				// Zeile kopieren
+			
+				
+				
+				
+				
+				
 			}
-		}
+		} // EDIT ROW
 		else {
 			$data = array();
 			$add = false;
@@ -911,7 +1091,7 @@ class tableBackend {
 				}
 				
 				if (isset($_REQUEST[sprintf('cell_%s', $def_id)])) { 
-					$value = $_REQUEST[sprintf('cell_%s', $def_id)];
+					$value = $_REQUEST[sprintf('cell_%s', $def_id)]; 
 					if ($add == false) {
 						// neue Zeile einfuegen
 						$data = array(dbFlexTableRow::field_table_id => $table_id);
@@ -930,6 +1110,7 @@ class tableBackend {
 						dbFlexTableCell::field_table_id => $table_id
 					);
 					$dbFlexTableCell->setCellValueByType($data, $value);
+					print_r($data);
 					if (!$dbFlexTableCell->sqlInsertRecord($data)) {
 						$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
 						return false;

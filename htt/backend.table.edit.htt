@@ -47,6 +47,17 @@
         <td><textarea name="{$table.keywords.name}">{$table.keywords.value}</textarea>
         <td>{$table.keywords.hint}</td>
       </tr>
+      <tr>
+        <td>{$table.homepage.label}</td>
+        <td>
+          <select name="{$table.homepage.name}">
+            {foreach $table.homepage.options option}
+            <option value="{$option.key}" {if ($option.key == $table.homepage.value)}selected="selected"{/if}>{$option.value}</option> 
+            {/foreach}
+          </select>
+        </td>
+        <td>{$table.homepage.hint}</td>
+      </tr>
       <tr><td colspan="3">&nbsp;</td></tr>
     </tbody>
   </table>
@@ -149,8 +160,10 @@
     <a name="fte"></a>
     <colgroup>
       <col width="150" />
-      <col widht="*" />
+      <col width="*" />
+      <col width="30" />
     </colgroup>
+    <tr><th colspan="2">&nbsp;</th><th>{$text_copy}</th></tr>
     {foreach $edit_row cell}
     <tr>
       <td>{$cell.head}</td>
@@ -169,6 +182,7 @@
         <input type="text" name="{$cell.name}" value="{$cell.value}" />
         {/if}
       </td>
+      <td><input type="checkbox" name="{$cell.copy.name}" value="{$cell.copy.value}" {if $cell.copy.active == 0}disabled="disabled" {/if}/></td>
     </tr>
     {/foreach}
   </table>
@@ -201,7 +215,8 @@
       {foreach $definitions definition}
       {if $definition.table_cell.value == 1}<th>{$definition.head.value}</th>{/if}
       {/foreach}
-      <th>&nbsp;</th>
+      <th>{$text_active}</th>
+      <th>{$text_copy}</th>
     </tr>
     {foreach $rows row}
     <tr class="{cycle values=array('flip', 'flop')}">
@@ -210,6 +225,7 @@
       {if $cell.table_cell == 1}<td class="{$cell.class}">{$cell.value}</td>{/if}
       {/foreach}
       <td><input type="checkbox" name="{$row.name}" value="{$row.value}" checked="checked" /></td>
+      <td><input type="checkbox" name="{$row.copy}" value="{$row.value}" /></td>
     </tr>
     {/foreach}
   </table>

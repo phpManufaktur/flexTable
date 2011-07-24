@@ -61,6 +61,13 @@ if (!$dbFlexTable->sqlFieldExists(dbFlexTable::field_title)) {
 	}
 }
 
+// Release 0.13
+if (!$dbFlexTable->sqlFieldExists(dbFlexTable::field_homepage)) {
+	if (!$dbFlexTable->sqlAlterTableAddField(dbFlexTable::field_homepage, "VARCHAR(255) NOT NULL DEFAULT ''", dbFlexTable::field_definitions)) {
+		$error .= sprintf('[UPGRADE] %s', $dbFlexTable->getError());
+		break;
+	}
+}
 
 // remove Droplets
 $dbDroplets = new dbDroplets();

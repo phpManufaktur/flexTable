@@ -13,6 +13,7 @@
 if (!defined('WB_PATH')) die('invalid call of '.$_SERVER['SCRIPT_NAME']);
 
 require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/initialize.php');
+require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.frontend.php');
 
 if (!function_exists('get_flex_table_ids_by_page_id')) {
 	function get_flex_table_ids_by_page_id($page_id, &$params=array(), &$page_url='') {
@@ -334,32 +335,52 @@ if (!function_exists('flex_table_droplet_header')) {
 	function flex_table_droplet_header($page_id) {
 		global $dbFlexTableCell;
   	global $dbFlexTable;
-		$result = array();
-		if (isset($_REQUEST['act']) && ($_REQUEST['act'] == 'det') && isset($_REQUEST[dbFlexTable::field_id]) && isset($_REQUEST[dbFlexTableRow::field_id])) {
-			$table_id = (int) $_REQUEST[dbFlexTable::field_id];
+  	
+  	$result = array(
+			'title'				=> '',
+			'description'	=> '',
+			'keywords'		=> ''
+		);
+		// Kopfdaten für Detailseiten von Events
+		if ((isset($_REQUEST[tableFrontend::request_action]) && ($_REQUEST[tableFrontend::request_action] == tableFrontend::action_detail)) &&
+				isset($_REQUEST[dbFlexTableRow::field_id]) && 
+				isset($_REQUEST[dbFlexTableRow::field_table_id])) { 
 			$row_id = (int) $_REQUEST[dbFlexTableRow::field_id];
+			$table_id = (int) $_REQUEST[dbFlexTableRow::field_table_id];
 			
-			$SQL = sprintf( "SELECT * FROM %s WHERE %s='%s'",
-  									$dbFlexTable->getTableName(),
-  									dbFlexTable::field_id,
-  									$table_id);
-	  	$table = array();
-	  	if (!$dbFlexTable->sqlExec($SQL, $table)) {
-	  		trigger_error(sprintf('[%s - %s] %s', __FUNCTION__, __LINE__, $dbFlexTable->getError()), E_USER_ERROR);
-	  		return false;
-	  	}
-	  	if (count($table) < 1) {
-	  		trigger_error(sprintf('[%s - %] %s', __FUNCTION__, __LINE__, sprintf(tool_error_id_invalid, $table_id)), E_USER_ERROR);
-	  		return false;
-	  	}
-	  	$table = $table[0];
-	  	$result = array(
-	  		'title'				=> $table[dbFlexTable::field_title],
-	  		'description'	=> $table[dbFlexTable::field_description],
-	  		'keywords'		=> $table[dbFlexTable::field_keywords]
-	  	);
+			$SQL = sprintf( "SELECT %s, %s FROM %s WHERE %s='%s' AND %s='%s' AND (%s='%s' OR %s='%s' OR %s='%s')",
+											dbFlexTableCell::field_char,
+											dbFlexTableCell::field_definition_name,
+											$dbFlexTableCell->getTableName(),
+											dbFlexTableCell::field_row_id,
+											$row_id,
+											dbFlexTableCell::field_table_id,
+											$table_id,
+											dbFlexTableCell::field_definition_name,
+											'title',
+											dbFlexTableCell::field_definition_name,
+											'description',
+											dbFlexTableCell::field_definition_name,
+											'keywords');
+			$header = array();
+			if (!$dbFlexTableCell->sqlExec($SQL, $header)) {
+				trigger_error(sprintf('[%s - %s] %s', __FUNCTION__, __LINE__, $dbFlexTableCell->getError()), E_USER_ERROR);
+				return false;
+			}
+			if (count($header) > 0) {
+				foreach ($header as $head) {
+					switch ($head[dbFlexTableCell::field_definition_name]):
+					case 'title':
+						$result['title'] = $head[dbFlexTableCell::field_char]; break;
+					case 'description':
+						$result['description'] = $head[dbFlexTableCell::field_char]; break;
+					case 'keywords':
+						$result['keywords'] = $head[dbFlexTableCell::field_char]; break;
+					endswitch;
+				}
+			}
 		}
-		return $result;
-	}
+  	return $result;
+	} // flex_table_droplet_header()
 }
 ?>

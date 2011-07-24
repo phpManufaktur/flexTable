@@ -23,6 +23,7 @@ class dbFlexTable extends dbConnectLE {
 	const field_keywords			= 'ft_keywords';
 	const field_definitions		= 'ft_defs';
 	const field_timestamp			= 'ft_stamp';
+	const field_homepage			= 'ft_homepage';
 
 	public $template_names = array(
 		self::field_definitions		=> 'definitions',
@@ -31,7 +32,8 @@ class dbFlexTable extends dbConnectLE {
 		self::field_name					=> 'name',
 		self::field_timestamp			=> 'timestamp',
 		self::field_title					=> 'title',
-		self::field_keywords			=> 'keywords'
+		self::field_keywords			=> 'keywords',
+		self::field_homepage			=> 'homepage'
 	); 
 	
 	private $createTables 		= false;
@@ -46,6 +48,7 @@ class dbFlexTable extends dbConnectLE {
   	$this->addFieldDefinition(self::field_keywords, "VARCHAR(255) NOT NULL DEFAULT ''");
   	$this->addFieldDefinition(self::field_description, "VARCHAR(255) NOT NULL DEFAULT ''");
   	$this->addFieldDefinition(self::field_definitions, "VARCHAR(255) NOT NULL DEFAULT ''");
+  	$this->addFieldDefinition(self::field_homepage, "VARCHAR(255) NOT NULL DEFAULT ''");
   	$this->addFieldDefinition(self::field_timestamp, "TIMESTAMP");	
   	$this->checkFieldDefinitions();
   	// Tabelle erstellen
@@ -255,7 +258,7 @@ class dbFlexTableCell extends dbConnectLE {
 		case dbFlexTableDefinition::type_char:
 			$value = $data[dbFlexTableCell::field_char]; break;
 		case dbFlexTableDefinition::type_datetime:
-			$value = date(ft_cfg_date_str, $data[dbFlexTableCell::field_datetime]); 
+			$value = date(ft_cfg_date_str, strtotime($data[dbFlexTableCell::field_datetime])); 
 			break;
 		case dbFlexTableDefinition::type_float:
 			$value = number_format($data[dbFlexTableCell::field_float], 2, ft_cfg_decimal_separator, ft_cfg_thousand_separator); 
@@ -275,12 +278,12 @@ class dbFlexTableCell extends dbConnectLE {
   } // getCellValueByType
   
   public function setCellValueByType(&$data, $value) {
-  	global $kitLibrary;
+  	global $kitLibrary;  
   	switch ($data[dbFlexTableDefinition::field_type]):
 		case dbFlexTableDefinition::type_char:
 			$data[dbFlexTableCell::field_char] = $value; break;
-		case dbFlexTableDefinition::type_datetime:
-			$data[dbFlexTableCell::field_datetime] = date(ft_cfg_date_str, strtotime($value)); break;
+		case dbFlexTableDefinition::type_datetime: 
+			$data[dbFlexTableCell::field_datetime] = date('Y-m-d H:i:s', strtotime($value)); break;
 		case dbFlexTableDefinition::type_float:
 			$data[dbFlexTableCell::field_float] = $kitLibrary->str2float($value, ft_cfg_thousand_separator, ft_cfg_decimal_separator); 
 			break;

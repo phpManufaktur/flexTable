@@ -12,7 +12,7 @@
   {foreach $items item}
   <div class="ft_item">
     {if $item.media_type == 'txt'}
-    <p><b>{$item.head}</b> {$item.value}</p>
+    <p><b>{$item.title}</b> {$item.value}</p>
     {elseif $item.media_type == 'pdf'}
     <p><b>{$item.head}</b> <a href="{$item.media_data.url}" target="_blank">{$item.media_data.text}</a></p>
     {else}

@@ -3,6 +3,11 @@ flexTable
 Ralf Hertsch, Stockholmer Str. 31, 13359 Berlin (Germany)
 http://phpManufaktur.de - ralf.hertsch@phpManufaktur.de
 
+Release 0.13
+2011-07-
+added: EN.php - many thanks to Jochen Skibbe
+fixed: datetime fields doesn't work proper
+
 Release 0.12
 2011-07-03
 added: added free definable anchors for the templates
