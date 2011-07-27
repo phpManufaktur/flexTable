@@ -41,13 +41,17 @@ class tableFrontend {
 	const param_css											= 'css';
 	const param_search									= 'search';
 	const param_page_header							= 'page_header';
+	const param_table_header						= 'table_header';
+	const param_table_filter						= 'table_filter';			
 	
 	private $params = array(
 		self::param_preset										=> 1, 
 		self::param_name											=> '',
 		self::param_css												=> true,
 		self::param_search										=> true,
-		self::param_page_header								=> true
+		self::param_page_header								=> true,
+		self::param_table_header							=> true,
+		self::param_table_filter							=> true
 	);
 	
 	const filter_none				= 'NONE';
@@ -209,7 +213,7 @@ class tableFrontend {
   	// CSS laden? 
     if ($this->params[self::param_css]) { 
 			if (!is_registered_droplet_css('flex_table', PAGE_ID)) { 
-	  		if (!register_droplet_css('flex_table', PAGE_ID, 'flex_table', 'frontend.css'));
+	  		if (!register_droplet_css('flex_table', PAGE_ID, 'flex_table', 'flex_table.css'));
 			}
     }
     elseif (is_registered_droplet_css('flex_table', PAGE_ID)) {
@@ -356,13 +360,15 @@ class tableFrontend {
   	}
   	
   	$table_array = array(
-  		'id'					=> $table[dbFlexTable::field_id],
-  		'name'				=> $table[dbFlexTable::field_name],
-  		'class'				=> $table[dbFlexTable::field_name],
-  		'description'	=> $table[dbFlexTable::field_description],
-  		'definition'	=> $def_array,
-  		'title'				=> $table[dbFlexTable::field_title],
-  		'keywords'		=> $table[dbFlexTable::field_keywords]
+  		'id'						=> $table[dbFlexTable::field_id],
+  		'name'					=> $table[dbFlexTable::field_name],
+  		'class'					=> $table[dbFlexTable::field_name],
+  		'description'		=> $table[dbFlexTable::field_description],
+  		'definition'		=> $def_array,
+  		'title'					=> $table[dbFlexTable::field_title],
+  		'keywords'			=> $table[dbFlexTable::field_keywords],
+  		'table_header'	=> ($this->params[self::param_table_header]) ? 1 : 0,
+  		'table_filter'	=> ($this->params[self::param_table_filter]) ? 1 : 0  	
   	);
   	if ($active_filter_id == -1) {
 	  	$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s' AND (%s='%s' OR %s='%s') ORDER BY %s ASC, FIND_IN_SET(%s, '%s')",
@@ -466,9 +472,7 @@ class tableFrontend {
 		$cells = array();
 		$row_id = -1;
 		$permalink = '';
-//echo "<pre>";		
-//print_r($rows);
-//echo "</pre>";		
+
 		foreach ($rows as $row) {
 			if ($row_id == -1) $row_id = $row[dbFlexTableCell::field_row_id];
 			if ($row_id != $row[dbFlexTableCell::field_row_id]) {
@@ -477,7 +481,7 @@ class tableFrontend {
 					'cells'			=> $cells,
 					'link'			=> sprintf(	'%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
   																http_build_query(array(	self::request_action => self::action_detail,
-  																												dbFlexTableRow::field_id => $row[dbFlexTableCell::field_row_id],
+  																												dbFlexTableRow::field_id => $row_id, 
   																												dbFlexTable::field_id => $row[dbFlexTableCell::field_table_id]))),
   				'permalink'	=> $permalink
 				);
@@ -517,12 +521,6 @@ class tableFrontend {
 				'id'		=> $row[dbFlexTableCell::field_id],
 				'value'	=> $value,
 				'class'	=> $row[dbFlexTableCell::field_definition_name],
-			/*
-				'link'	=> sprintf(	'%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
-  													http_build_query(array(	self::request_action => self::action_detail,
-  																									dbFlexTableRow::field_id => $row[dbFlexTableCell::field_row_id],
-  																									dbFlexTable::field_id => $row[dbFlexTableCell::field_table_id]))),
-  		*/
   			'media_type'	=> $media_type,
   			'media_data'	=> $media_data
 			);
@@ -534,7 +532,7 @@ class tableFrontend {
 				'cells'	=> $cells,
 				'link'	=> sprintf(	'%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
   													http_build_query(array(	self::request_action => self::action_detail,
-  																									dbFlexTableRow::field_id => $row[dbFlexTableCell::field_row_id],
+  																									dbFlexTableRow::field_id => $row_id, 
   																									dbFlexTable::field_id => $row[dbFlexTableCell::field_table_id]))),
   			'permalink'	=> $permalink
 			);

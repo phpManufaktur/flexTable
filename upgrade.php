@@ -111,6 +111,11 @@ if ($message != "") {
   echo '<script language="javascript">alert ("'.$message.'");</script>';
 }
 
+// delete files
+if (file_exists(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/frontend.css')) {
+	@unlink(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/frontend.css'); 
+}
+
 // Prompt Errors
 if (!empty($error)) {
 	$admin->print_error($error);

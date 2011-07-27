@@ -3,6 +3,15 @@ flexTable
 Ralf Hertsch, Stockholmer Str. 31, 13359 Berlin (Germany)
 http://phpManufaktur.de - ralf.hertsch@phpManufaktur.de
 
+Release 0.14
+2011-07-27
+fixed: linking flex_table.css does not work
+fixed: <tr> widow in /htt/1/DE/table.htt and /htt/101/DE/table.htt
+fixed: dynamically linking of detail pages calls the next row instead of the actual row
+fixed: stripslashes() problem with HTML fields
+added: droplet parameter "table_header" true/false for switching the table header on/off
+added: droplet parameter "table_filter" true/false for switching the table filter on/off
+
 Release 0.13
 2011-07-24
 added: EN.php - many thanks to Jochen Skibbe for translation

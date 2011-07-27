@@ -271,10 +271,10 @@ class dbFlexTableCell extends dbConnectLE {
   	}
   } // __construct()
 		
-    public function getCellValueByType($data) {
+  public function getCellValueByType($data) {
   	switch ($data[dbFlexTableCell::field_definition_type]):
 		case dbFlexTableDefinition::type_char:
-			$value = $data[dbFlexTableCell::field_char]; break;
+			$value = stripslashes($data[dbFlexTableCell::field_char]); break;
 		case dbFlexTableDefinition::type_datetime:
 			$value = date(ft_cfg_date_str, strtotime($data[dbFlexTableCell::field_datetime])); 
 			break;
@@ -284,9 +284,9 @@ class dbFlexTableCell extends dbConnectLE {
 		case dbFlexTableDefinition::type_integer:
 			$value = $data[dbFlexTableCell::field_integer]; break;
 		case dbFlexTableDefinition::type_html:
-			$value = $data[dbFlexTableCell::field_html]; break;
+			$value = stripslashes($data[dbFlexTableCell::field_html]); break;
 		case dbFlexTableDefinition::type_text:
-			$value = $data[dbFlexTableCell::field_text]; break;
+			$value = stripslashes($data[dbFlexTableCell::field_text]); break;
 		case dbFlexTableDefinition::type_media_link:
 			$value = $data[dbFlexTableCell::field_media_link]; break;
 		default:

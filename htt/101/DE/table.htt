@@ -11,13 +11,16 @@
 <div id="ft_table_101">
   <table class="{$table.class}">
     <thead>
+      {if $table.table_header == '1'}
       <tr>
         {foreach $table.definition as head}
         <th class="{$head.class}">{$head.head}</th>
         {/foreach}
       </tr>
+      {/if}
+      {if $table.table_filter == '1'}
       <tr>
-      <tr><form>  
+        <form>  
         {foreach $table.definition as definition}
         <td><select name="{$definition.filter.name}" onchange="javascript:window.location='{$page_link}?{$definition.filter.name}='+this.form.{$definition.filter.name}.options[this.form.{$definition.filter.name}.selectedIndex].value+'#{$anchor.table}';">
           {foreach $definition.filter.values option}
@@ -25,7 +28,9 @@
           {/foreach}
         </select></td>
         {/foreach}
-    </form></tr>
+        </form>
+      </tr>
+      {/if}
     </thead>
     <tbody>
       {foreach $rows row}

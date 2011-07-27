@@ -17,6 +17,8 @@ if (file_exists(WB_PATH.'/modules/flex_table/class.frontend.php')) {
 	$params[tableFrontend::param_css] = (isset($css) && (strtolower($css) == 'false')) ? false : true;
 	$params[tableFrontend::param_search] = (isset($search) && (strtolower($search) == 'false')) ? false : true;
 	$params[tableFrontend::param_page_header] = (isset($page_header) && (strtolower($page_header) == 'false')) ? false : true;
+	$params[tableFrontend::param_table_header] = (isset($table_header) && (strtolower($table_header) == 'false')) ? false : true;
+	$params[tableFrontend::param_table_filter] = (isset($table_filter) && (strtolower($table_filter) == 'false')) ? false : true;
 	$params[tableFrontend::param_name] = (isset($name)) ? strtolower($name) : ''; 
 	if (!$table->setParams($params)) return $table->getError();
 	return $table->action();

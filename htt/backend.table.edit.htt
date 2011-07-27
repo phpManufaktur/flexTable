@@ -179,7 +179,7 @@
         {elseif $cell.type == 'html'}
         {$cell.value}
         {else}
-        <input type="text" name="{$cell.name}" value="{$cell.value}" />
+        <input type="text" name="{$cell.name}" value="{$cell.value|escape}" /> {* mit |escape werden stoerende Tags aus der Ausgabe entfernt - siehe Dwoo Hilfe! *}
         {/if}
       </td>
       <td><input type="checkbox" name="{$cell.copy.name}" value="{$cell.copy.value}" {if $cell.copy.active == 0}disabled="disabled" {/if}/></td>

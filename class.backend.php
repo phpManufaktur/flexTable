@@ -568,7 +568,7 @@ class tableBackend {
 			// HTML ?
 			if ($def[dbFlexTableDefinition::field_type] == dbFlexTableDefinition::type_html) {
 				ob_start();
-					show_wysiwyg_editor(sprintf('cell_%s', $def[dbFlexTableDefinition::field_id]), sprintf('cell_%s', $def[dbFlexTableDefinition::field_id]), stripslashes($value), '99%', '200px');
+					show_wysiwyg_editor(sprintf('cell_%s', $def[dbFlexTableDefinition::field_id]), sprintf('cell_%s', $def[dbFlexTableDefinition::field_id]), $value, '99%', '200px');
 					$value = ob_get_contents();
 				ob_end_clean();		
 			}
