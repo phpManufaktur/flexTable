@@ -61,8 +61,11 @@ global $dbFlexTableDefinition;
 global $dbFlexTableRow;
 global $dbFlexTableCfg;
 
-if (!is_object($kitLibrary)) 								$kitLibrary = new kitToolsLibrary();
 if (!is_object($parser)) 										$parser = new Dwoo();
+$loader = $parser->getLoader();
+$loader->addDirectory(WB_PATH.'/modules/flex_table/htt/plugins/');
+
+if (!is_object($kitLibrary)) 								$kitLibrary = new kitToolsLibrary();
 if (!is_object($dbFlexTable))								$dbFlexTable = new dbFlexTable();
 if (!is_object($dbFlexTableCell))						$dbFlexTableCell = new dbFlexTableCell();
 if (!is_object($dbFlexTableDefinition))			$dbFlexTableDefinition = new dbFlexTableDefinition();

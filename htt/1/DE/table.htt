@@ -18,7 +18,7 @@
         {/foreach}
       </tr>
       {/if}
-      {if $table.table_filter == '1'}
+     {if $table.table_filter == '1'}
       <tr>
         <form>  
         {foreach $table.definition as definition}
@@ -30,7 +30,7 @@
         {/foreach}
         </form>
       </tr>
-      {/if}
+    {/if} 
     </thead>
     <tbody>
       {foreach $rows row}

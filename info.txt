@@ -3,6 +3,13 @@ flexTable
 Ralf Hertsch, Stockholmer Str. 31, 13359 Berlin (Germany)
 http://phpManufaktur.de - ralf.hertsch@phpManufaktur.de
 
+Release 0.15
+2011-08-11
+added: /htt/plugins directory for user defined Dwoo plugins
+added: autoload function for all user defined Dwoo plugins
+added: sample for user defined plugin add_days_to_date()
+added: missing link and permalink at detail view
+
 Release 0.14
 2011-07-27
 fixed: linking flex_table.css does not work

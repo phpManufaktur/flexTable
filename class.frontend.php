@@ -70,8 +70,8 @@ class tableFrontend {
 		$this->media_url = WB_URL.MEDIA_DIRECTORY.'/'.$dbFlexTableCfg->getValue(dbFlexTableCfg::cfgMediaDirectory).'/';
 		$this->media_path = WB_PATH.MEDIA_DIRECTORY.'/'.$dbFlexTableCfg->getValue(dbFlexTableCfg::cfgMediaDirectory).'/';
 		date_default_timezone_set(tool_cfg_time_zone);
-		$this->media_doc_types = $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgImageFileTypes);
-		$this->media_image_types = $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgDocFileTypes);
+		$this->media_doc_types = $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgDocFileTypes);
+		$this->media_image_types = $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgImageFileTypes);
 		$this->media_file_types = array_merge($this->media_image_types, $this->media_doc_types);
 	} // __construct()
 	
@@ -259,6 +259,11 @@ class tableFrontend {
 		return $result;
   } // action
   
+  /**
+   * Stellt die Daten der Tabelle zusammen und uebergibt sie an das Template table.htt
+   * 
+   * @return STR flexTable
+   */
   public function showTable() {
   	global $dbFlexTable;
   	global $dbFlexTableCell;
@@ -502,7 +507,9 @@ class tableFrontend {
 				$media_type = $ext;
 				$width = 0;
 				$height = 0;
-				if (in_array($ext, $this->media_image_types)) {
+				echo $ext;
+				print_r($this->media_image_types);
+				if (in_array($ext, $this->media_image_types)) { 
 					list($width, $height) = getimagesize($this->media_path.$value);
 				}
 				$media_data = array(
@@ -602,6 +609,8 @@ class tableFrontend {
   		return false;
   	}
   	$items_array = array();
+  	$permalink = '';
+  	
   	foreach ($items as $item) {
   		$where = array(dbFlexTableDefinition::field_id => $item[dbFlexTableCell::field_definition_id]);
   		$definition = array();
@@ -616,6 +625,12 @@ class tableFrontend {
   		$definition = $definition[0];
   		$value = $dbFlexTableCell->getCellValueByType($item);
   		
+  		if (($item[dbFlexTableCell::field_definition_name] == 'permalink') && !empty($value)) {
+				// permalink
+				$permalink = WB_URL.PAGES_DIRECTORY.$value;
+				continue;
+			}
+			
   		if (($item[dbFlexTableCell::field_definition_type] == dbFlexTableDefinition::type_media_link) && 
 					(!empty($value))) {
 				$ext = strtolower(pathinfo($this->media_path.$value, PATHINFO_EXTENSION));
@@ -667,6 +682,11 @@ class tableFrontend {
   		'table'					=> $table_array,
   		'items'					=> $items_array,
   		'link_back'			=> sprintf('%s', $this->page_link),
+  		'link'					=> sprintf(	'%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
+  																http_build_query(array(	self::request_action => self::action_detail,
+  																												dbFlexTableRow::field_id => $row_id, 
+  																												dbFlexTable::field_id => $table[dbFlexTable::field_id]))),
+  		'permalink'			=> $permalink,
   		'anchor'				=> array(	'detail'	=> $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgAnchorDetail),
   															'table'		=> $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgAnchorTable))
   	 );
