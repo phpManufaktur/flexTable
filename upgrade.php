@@ -89,7 +89,7 @@ if (!$dbFlexTable->sqlFieldExists(dbFlexTable::field_homepage)) {
 
 // remove Droplets
 $dbDroplets = new dbDroplets();
-$droplets = array('flex_table');
+$droplets = array('flex_table', 'flex_detail');
 foreach ($droplets as $droplet) {
 	$where = array(dbDroplets::field_name => $droplet);
 	if (!$dbDroplets->sqlDeleteRecord($where)) {
