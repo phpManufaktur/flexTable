@@ -23,6 +23,7 @@ class tableFrontend {
 	const action_default			= 'def';
 	const action_table				= 'tbl';
 	const action_detail				= 'det';
+	const action_view_id			= 'id';
 	
 	private $page_link 								= '';
 	private $img_url									= '';
@@ -36,13 +37,19 @@ class tableFrontend {
 	private $media_image_types				= array();
 	private $media_doc_types					= array();
 	
+	const mode_table										= 'table';
+	const mode_detail										= 'detail';
+	
 	const param_preset									= 'preset';
 	const param_name										= 'name';
 	const param_css											= 'css';
 	const param_search									= 'search';
 	const param_page_header							= 'page_header';
 	const param_table_header						= 'table_header';
-	const param_table_filter						= 'table_filter';			
+	const param_table_filter						= 'table_filter';
+	const param_mode										= 'mode';
+	const param_rows										= 'rows';	
+	const param_show_last								= 'show_last';		
 	
 	private $params = array(
 		self::param_preset										=> 1, 
@@ -51,7 +58,10 @@ class tableFrontend {
 		self::param_search										=> true,
 		self::param_page_header								=> true,
 		self::param_table_header							=> true,
-		self::param_table_filter							=> true
+		self::param_table_filter							=> true,
+		self::param_mode											=> self::mode_table,
+		self::param_rows											=> '',
+		self::param_show_last									=> 0
 	);
 	
 	const filter_none				= 'NONE';
@@ -86,6 +96,8 @@ class tableFrontend {
 			$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, sprintf(ft_error_preset_not_exists, '/modules/'.basename(dirname(__FILE__)).'/htt/'.$this->params[self::param_preset].'/'.FLEX_TABLE_LANGUAGE.'/')));
 			return false;
 		}
+		// if the mode is not set, switch to "table" mode
+		if (!isset($this->params[self::param_mode])) $this->params[self::param_mode] = self::mode_table;
 		return true;
 	} // setParams()
 	
@@ -208,7 +220,15 @@ class tableFrontend {
 	  		$_REQUEST[$key] = $this->xssPrevent($value);	  			
 	  	} 
 	  }
-	   $action = isset($_REQUEST[self::request_action]) ? $_REQUEST[self::request_action] : self::action_default;
+	  
+	  // check the mode
+	  if ($this->params[self::param_mode] == self::mode_table) {
+	  	$action = isset($_REQUEST[self::request_action]) ? $_REQUEST[self::request_action] : self::action_default;
+	  }
+	  else {
+	  	// detail mode
+	  	$action = isset($_REQUEST[self::request_action]) ? $_REQUEST[self::request_action] : self::action_view_id;
+	  }
 	  
   	// CSS laden? 
     if ($this->params[self::param_css]) { 
@@ -243,6 +263,9 @@ class tableFrontend {
     
     
     switch ($action):
+  	case self::action_view_id:
+  		$result = $this->showID();
+  		break;
   	case self::action_detail:
   		$result = $this->showDetail();
   		break;
@@ -555,19 +578,48 @@ class tableFrontend {
   	return $this->getTemplate('table.htt', $data);
   } // showTable()
   
-  public function showDetail() {
+  /**
+   * Show the details of a row record - also this items which are not shown in the table
+   * showDetail() can be called from the table in "table" mode or from showID() in "detail" mode
+   * 
+   * @param INT $row_id
+   * @return MIXED STR detail dialog on success or BOOL FALSE on error
+   */
+  public function showDetail($row_id = -1) {
   	global $dbFlexTableCell;
   	global $dbFlexTable;
   	global $dbFlexTableDefinition;
   	global $dbFlexTableCfg;
+  	global $dbFlexTableRow;
   	
-  	$row_id = (isset($_REQUEST[dbFlexTableRow::field_id])) ? $_REQUEST[dbFlexTableRow::field_id] : -1;
-  	if ($row_id < 1) {
-  		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, ft_error_row_id_missing));
-  		return false;
+  	if ($this->params[self::param_mode] == self::mode_detail) {
+  		// flexTable works in "detail" mode!
+  		if ($row_id < 1) {
+  			$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, ft_error_row_id_missing));
+  			return false;
+  		}
+  	 	$where = array(dbFlexTableRow::field_id => $row_id);
+  		$row = array();
+  		if (!$dbFlexTableRow->sqlSelectRecord($where, $row)) {
+  			$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableRow->getError()));
+  			return false;
+  		}
+  		if (count($row) < 1) {
+  			$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, sprintf(ft_error_row_id_invalid, $row_id)));
+  			return false;
+  		}
+  		$table_id = $row[0][dbFlexTableRow::field_table_id];
+  	}
+  	else {
+  		// flexTable is using standard "table" mode
+  		$row_id = (isset($_REQUEST[dbFlexTableRow::field_id])) ? $_REQUEST[dbFlexTableRow::field_id] : -1;
+  		if ($row_id < 1) {
+  			$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, ft_error_row_id_missing));
+  			return false;
+  		}
+  	 	$table_id = (isset($_REQUEST[dbFlexTable::field_id])) ? $_REQUEST[dbFlexTable::field_id] : -1; 	
   	}
   	
-  	$table_id = (isset($_REQUEST[dbFlexTable::field_id])) ? $_REQUEST[dbFlexTable::field_id] : -1;
   	if ($table_id < 1) {
   		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, dt_error_table_id_missing));
   		return false;
@@ -653,7 +705,6 @@ class tableFrontend {
 				$media_type = 'txt';
 				$media_data = array();
 			}
-			
   		
 			$items_array[$item[dbFlexTableCell::field_definition_name]] = array(
 				$dbFlexTableDefinition->template_names[dbFlexTableDefinition::field_description] => $definition[dbFlexTableDefinition::field_description],
@@ -679,6 +730,7 @@ class tableFrontend {
   	}
 		
   	$data = array(
+  		'mode'					=> $this->params[self::param_mode],
   		'table'					=> $table_array,
   		'items'					=> $items_array,
   		'link_back'			=> sprintf('%s', $this->page_link),
@@ -693,6 +745,81 @@ class tableFrontend {
   	 return $this->getTemplate('detail.htt', $data);
   } // showDetail()
 	
+  /**
+   * 
+   */
+  public function showID() {
+  	global $dbFlexTable;
+  	global $dbFlexTableRow;
+  	
+  	if (empty($this->params[self::param_rows]) && ($this->params[self::param_show_last] < 1)) {
+  		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, ft_error_detail_params_missing));
+  		return false;
+  	}
+  	if ($this->params[self::param_show_last] > 0) {
+  		// show last row items ...
+  		$limit = intval($this->params[self::param_show_last]);
+  		$tables = array();
+  		if (!empty($this->params[self::param_name])) { 
+  			// select from desired tables
+  			$tabs = explode(',', $this->params[self::param_name]);
+  			foreach ($tabs as $tab) {
+  				$tab = trim($tab);
+  				$SQL = sprintf( "SELECT %s FROM %s WHERE %s='%s'", 
+  												dbFlexTable::field_id,
+  												$dbFlexTable->getTableName(),
+  												dbFlexTable::field_name,
+  												$tab);
+  				$table = array();
+  				if (!$dbFlexTable->sqlExec($SQL, $table)) {
+  					$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTable->getError()));
+  					return false;
+  				}
+  				if (count($table) < 1) {
+  					$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, sprintf(ft_error_table_name_invalid, $tab)));
+  					return false;
+  				}
+  				$tables[] = $table[0][dbFlexTable::field_id];
+  			}
+  		}
+  		$tab_str = '';
+  		if (count($tables) > 0) {
+  			$tab_str = 'WHERE (';
+  			$start = true;
+  			foreach ($tables as $table) {
+  				if (!$start) $tab_str .= ' OR ';
+  				$tab_str .= sprintf("%s='%s'", dbFlexTableRow::field_table_id, $table);
+  				if ($start) $start = false;
+  			}
+  			$tab_str .= ')';
+  		}
+  		$SQL = sprintf( "SELECT * FROM %s %s ORDER BY %s DESC LIMIT %s",
+  										$dbFlexTableRow->getTableName(),
+  										$tab_str,
+  										dbFlexTableRow::field_timestamp,
+  										$limit);
+  	  $result = array();
+  
+  	  if (!$dbFlexTableRow->sqlExec($SQL, $result)) {
+  	  	$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableRow->getError()));
+  	  	return false;
+  	  }
+  	  $ids = array();
+  	  foreach ($result as $tab) $ids[] = $tab[dbFlexTableRow::field_id];
+  	}
+  	else {
+  		$ids = explode(',', $this->params[self::param_rows]);
+  	}
+  	$result = '';
+  	foreach ($ids as $id) {
+  		if (false === ($result .= $this->showDetail(intval($id)))) {
+  			$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $this->getError()));
+  			return false;
+  		}
+  	}
+  	return $result;
+  } // showID
+  
 } // class tableFrontend
 
 ?>

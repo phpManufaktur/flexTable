@@ -220,7 +220,7 @@
     </tr>
     {foreach $rows row}
     <tr class="{cycle values=array('flip', 'flop')}">
-      <td><input type="button" class="btn_edit" value="{$btn_edit}" onclick="javascript: window.location = '{$row.link}'; return false;" /></td>
+      <td><input type="button" class="btn_edit" value="{$row.id}" onclick="javascript: window.location = '{$row.link}'; return false;" /></td>
       {foreach $row.cells cell}
       {if $cell.table_cell == 1}<td class="{$cell.class}">{$cell.value}</td>{/if}
       {/foreach}

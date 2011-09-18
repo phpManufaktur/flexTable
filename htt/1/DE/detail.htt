@@ -20,5 +20,7 @@
     {/if}
   </div>
   {/foreach}
+  {if $mode == 'table'}
   <p><a href="{$link_back}#{$anchor.table}">Zurück...</a></p>
+  {/if}
 </div>
