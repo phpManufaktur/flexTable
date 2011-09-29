@@ -10,24 +10,24 @@
  * Beispielseite fuer einen Katalog von Naturschutzmassnahmen
  *}
 <a name="{$anchor.detail}"></a> 
-<div id="ft_detail_101">
+<div id="ft_detail_102">
   <h2>{$items.massnahme.value}</h2>
   {if isset($items.bild.media_data.url)}
-  <div class="bild_101">
-    <img src="{$items.bild.media_data.url}" alt="{$items.bild.media_data.text}" width="{$items.bild.media_data.width}" height="{$items.bild.media_data.height}" />
+  <div class="bild_102">
+    <img src="{$items.bild.media_data.url}" alt="{$items.bild.media_data.text}" width="250"/>
   </div>
   {/if}
   
-  <p><em>{$items.park.title}</em><br />{$items.park.value}</p>
-  <p><em>{$items.land_gemeinde.title}</em><br />{$items.land_gemeinde.value}</p>
-  <p><em>{$items.verwaltung.title}</em><br />{$items.verwaltung.value}</p>
-  <p><em>{$items.ausgangsproblem.title}</em><br />{$items.ausgangsproblem.value}</p>
-  <p><em>{$items.loesungsansatz.title}</em><br />{$items.loesungsansatz.value}</p>
-  <p><em>{$items.massnahme_beschreibung.title}</em><br />{$items.massnahme_beschreibung.value}</p>
-  <p><em>{$items.erfolgsbilanz.title}</em><br />{$items.erfolgsbilanz.value}</p>
-  <p><em>{$items.massnahme_festlegung.title}</em><br />{$items.massnahme_festlegung.value}</p>
-  <p><em>{$items.schutzstatus.title}</em><br />{$items.schutzstatus.value}</p>
-  <p><em>{$items.ansprechpartner.title}</em><br />{$items.ansprechpartner.value}</p>
+  {if count_characters($items.park.value) > 0}<p><em>{$items.park.title}</em><br />{$items.park.value}</p>{/if}
+  {if count_characters($items.land_gemeinde.value) > 0}<p><em>{$items.land_gemeinde.title}</em><br />{$items.land_gemeinde.value}</p>{/if}
+  {if count_characters($items.verwaltung.value) > 0}<p><em>{$items.verwaltung.title}</em><br />{$items.verwaltung.value}</p>{/if}
+  {if count_characters($items.ausgangsproblem.value) > 0}<p><em>{$items.ausgangsproblem.title}</em><br />{$items.ausgangsproblem.value}</p>{/if}
+  {if count_characters($items.loesungsansatz.value) > 0}<p><em>{$items.loesungsansatz.title}</em><br />{$items.loesungsansatz.value}</p>{/if}
+  {if count_characters($items.massnahme_beschreibung.value) > 0}<p><em>{$items.massnahme_beschreibung.title}</em><br />{$items.massnahme_beschreibung.value}</p>{/if}
+  {if count_characters($items.erfolgsbilanz.value) > 0}<p><em>{$items.erfolgsbilanz.title}</em><br />{$items.erfolgsbilanz.value}</p>{/if}
+  {if count_characters($items.massnahme_festlegung.value) > 0}<p><em>{$items.massnahme_festlegung.title}</em><br />{$items.massnahme_festlegung.value}</p>{/if}
+  {if count_characters($items.schutzstatus.value) > 0}<p><em>{$items.schutzstatus.title}</em><br />{$items.schutzstatus.value}</p>{/if}
+  {if count_characters($items.ansprechpartner.value) > 0}<p><em>{$items.ansprechpartner.title}</em><br />{$items.ansprechpartner.value}</p>{/if}
    
   <p><a href="{$link_back}#{$anchor.table}">Zurück zur Übersichtstabelle...</a></p>
 </div>
