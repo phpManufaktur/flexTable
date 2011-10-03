@@ -15,7 +15,7 @@
   {/if}
   <div class="about_text">
     <h2>flexTable</h2>
-    <p>Release {$version}</b> - &copy 2011 by phpManufaktur, Ralf Hertsch (Berlin)</p>
+    <p><b>Release {$version}</b> - &copy 2011 by phpManufaktur, Ralf Hertsch (Berlin)</p>
     <p class="about_address"><b>phpManufaktur</b><br />Ralf Hertsch<br />Stockholmer Str. 31<br />13359 Berlin</p>
     <p class="about_contact">
       <a href="http://phpmanufaktur.de" target="_blank">http://phpManufaktur.de</a><br />
