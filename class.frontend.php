@@ -456,11 +456,13 @@ class tableFrontend {
 	  	}
 	  	else {
 	  		// nach Gruppen filtern
-	  		$SQL = sprintf( "SELECT %s FROM %s WHERE %s='%s' AND %s LIKE '%s' ORDER BY %s ASC",
+	  		$SQL = sprintf( "SELECT %s FROM %s WHERE %s='%s' AND %s='%s' AND %s LIKE '%s' ORDER BY %s ASC",
 	  										dbFlexTableCell::field_row_id,
 	  										$dbFlexTableCell->getTableName(),
 	  										dbFlexTableCell::field_table_id,
 	  										$table_id,
+	  										dbFlexTableCell::field_definition_name,
+	  										$def[dbFlexTableDefinition::field_name],
 	  										$field,
 	  										$_REQUEST[sprintf('%s_%s', self::request_filter, $active_filter_id)],
 	  										dbFlexTableCell::field_row_id);
@@ -530,8 +532,6 @@ class tableFrontend {
 				$media_type = $ext;
 				$width = 0;
 				$height = 0;
-				echo $ext;
-				print_r($this->media_image_types);
 				if (in_array($ext, $this->media_image_types)) { 
 					list($width, $height) = getimagesize($this->media_path.$value);
 				}

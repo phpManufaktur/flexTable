@@ -20,7 +20,7 @@
       {/if}
      {if $table.table_filter == '1'}
       <tr>
-        <form>  
+        <form>  {dump()}
         {foreach $table.definition as definition}
         <td><select name="{$definition.filter.name}" onchange="javascript:window.location='{$page_link}?{$definition.filter.name}='+this.form.{$definition.filter.name}.options[this.form.{$definition.filter.name}.selectedIndex].value+'#{$anchor.table}';">
           {foreach $definition.filter.values option}
