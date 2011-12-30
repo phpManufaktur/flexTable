@@ -9,8 +9,24 @@
  * @version $Id$
  */
 
-// prevent this file from being accessed directly
-if (!defined('WB_PATH')) die('invalid call of '.$_SERVER['SCRIPT_NAME']);
+// include class.secure.php to protect this file and the whole CMS!
+if (defined('WB_PATH')) {
+    if (defined('LEPTON_VERSION')) include (WB_PATH . '/framework/class.secure.php');
+} else {
+    $oneback = "../";
+    $root = $oneback;
+    $level = 1;
+    while (($level < 10) && (! file_exists($root . '/framework/class.secure.php'))) {
+        $root .= $oneback;
+        $level += 1;
+    }
+    if (file_exists($root . '/framework/class.secure.php')) {
+        include ($root . '/framework/class.secure.php');
+    } else {
+        trigger_error(sprintf("[ <b>%s</b> ] Can't include class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+    }
+}
+// end include class.secure.php
 
 require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/initialize.php');
 require_once(WB_PATH.'/modules/droplets_extension/interface.php');
@@ -230,11 +246,12 @@ class tableFrontend {
 	  	$action = isset($_REQUEST[self::request_action]) ? $_REQUEST[self::request_action] : self::action_view_id;
 	  }
 	  
-  	// CSS laden? 
-    if ($this->params[self::param_css]) { 
-			if (!is_registered_droplet_css('flex_table', PAGE_ID)) { 
-	  		if (!register_droplet_css('flex_table', PAGE_ID, 'flex_table', 'flex_table.css'));
-			}
+  	// CSS laden?
+  	 
+    if ($this->params[self::param_css]) {
+        if (!is_registered_droplet_css('flex_table', PAGE_ID)) {
+            if (!register_droplet_css('flex_table', PAGE_ID, 'flex_table', 'flex_table.css'));
+        }
     }
     elseif (is_registered_droplet_css('flex_table', PAGE_ID)) {
 		  unregister_droplet_css('flex_table', PAGE_ID);

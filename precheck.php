@@ -12,36 +12,47 @@
  * FOR VERSION- AND RELEASE NOTES PLEASE LOOK AT INFO.TXT!
  */
 
-// try to include LEPTON class.secure.php to protect this file and the whole CMS!
-if (defined('WB_PATH')) {	
-	if (defined('LEPTON_VERSION')) include(WB_PATH.'/framework/class.secure.php');
-} elseif (file_exists($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php')) {
-	include($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php'); 
+// include class.secure.php to protect this file and the whole CMS!
+if (defined('WB_PATH')) {
+    if (defined('LEPTON_VERSION')) include (WB_PATH . '/framework/class.secure.php');
 } else {
-	$subs = explode('/', dirname($_SERVER['SCRIPT_NAME']));	$dir = $_SERVER['DOCUMENT_ROOT'];
-	$inc = false;
-	foreach ($subs as $sub) {
-		if (empty($sub)) continue; $dir .= '/'.$sub;
-		if (file_exists($dir.'/framework/class.secure.php')) { 
-			include($dir.'/framework/class.secure.php'); $inc = true;	break; 
-		} 
-	}
-	if (!$inc) trigger_error(sprintf("[ <b>%s</b> ] Can't include LEPTON class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+    $oneback = "../";
+    $root = $oneback;
+    $level = 1;
+    while (($level < 10) && (! file_exists($root . '/framework/class.secure.php'))) {
+        $root .= $oneback;
+        $level += 1;
+    }
+    if (file_exists($root . '/framework/class.secure.php')) {
+        include ($root . '/framework/class.secure.php');
+    } else {
+        trigger_error(sprintf("[ <b>%s</b> ] Can't include class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+    }
 }
-// end include LEPTON class.secure.php
+// end include class.secure.php
 
 // Checking Requirements
 
 $PRECHECK['WB_VERSION'] = array('VERSION' => '2.8', 'OPERATOR' => '>=');
 $PRECHECK['PHP_VERSION'] = array('VERSION' => '5.2.0', 'OPERATOR' => '>=');
-$PRECHECK['WB_ADDONS'] = array(
-	'dbconnect_le'	=> array('VERSION' => '0.65', 'OPERATOR' => '>='),
-	'dwoo' => array('VERSION' => '0.11', 'OPERATOR' => '>='),
-	'droplets' => array('VERSION' => '1.0', 'OPERATOR' => '>='),
-	'droplets_extension' => array('VERSION' => '0.16', 'OPERATOR' => '>='),
-	'kit_tools' => array('VERSION' => '0.14', 'OPRATOR' => '>='),
-	'perma_link' => array('VERSION' => '0.11', 'OPERATOR' => '>=')
-);
+if (!defined('LEPTON_VERSION') || version_compare(LEPTON_VERSION, '2.0.0.0', '<=')) {
+    $PRECHECK['WB_ADDONS'] = array(
+    	'dbconnect_le'	=> array('VERSION' => '0.65', 'OPERATOR' => '>='),
+    	'dwoo' => array('VERSION' => '0.11', 'OPERATOR' => '>='),
+    	'droplets' => array('VERSION' => '1.0', 'OPERATOR' => '>='),
+    	'droplets_extension' => array('VERSION' => '0.16', 'OPERATOR' => '>='),
+    	'kit_tools' => array('VERSION' => '0.14', 'OPRATOR' => '>='),
+    	'perma_link' => array('VERSION' => '0.11', 'OPERATOR' => '>=')
+    );
+}
+else {
+    // LEPTON 2.x
+    $PRECHECK['WB_ADDONS'] = array(
+    	'dbconnect_le'	=> array('VERSION' => '0.65', 'OPERATOR' => '>='),
+    	'kit_tools' => array('VERSION' => '0.14', 'OPRATOR' => '>='),
+    	'perma_link' => array('VERSION' => '0.11', 'OPERATOR' => '>=')
+    );
+}
 
 global $database;  
 $sql = "SELECT `value` FROM `".TABLE_PREFIX."settings` WHERE `name`='default_charset'";
