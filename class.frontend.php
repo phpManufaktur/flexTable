@@ -29,7 +29,8 @@ if (defined('WB_PATH')) {
 // end include class.secure.php
 
 require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/initialize.php');
-require_once(WB_PATH.'/modules/droplets_extension/interface.php');
+
+if (!LEPTON_2) require_once(WB_PATH.'/modules/droplets_extension/interface.php');
 
 class tableFrontend {
 	
@@ -229,6 +230,7 @@ class tableFrontend {
    * @return STR result
    */
   public function action() { 
+      global $wb;
   	
   	$html_allowed = array();
 	  foreach ($_REQUEST as $key => $value) {
@@ -247,37 +249,65 @@ class tableFrontend {
 	  }
 	  
   	// CSS laden?
-  	 
-    if ($this->params[self::param_css]) {
-        if (!is_registered_droplet_css('flex_table', PAGE_ID)) {
-            if (!register_droplet_css('flex_table', PAGE_ID, 'flex_table', 'flex_table.css'));
+  	if (!LEPTON_2) { 
+        if ($this->params[self::param_css]) {
+            if (!is_registered_droplet_css('flex_table', PAGE_ID)) {
+                register_droplet_css('flex_table', PAGE_ID, 'flex_table', 'flex_table.css');
+            }
         }
-    }
-    elseif (is_registered_droplet_css('flex_table', PAGE_ID)) {
-		  unregister_droplet_css('flex_table', PAGE_ID);
-    }
-    // Register Droplet for the WebsiteBaker Search Function
-  	if ($this->params[self::param_search]) {
-  		if (!is_registered_droplet_search('flex_table', PAGE_ID)) {  
+        elseif (is_registered_droplet_css('flex_table', PAGE_ID)) {
+		    unregister_droplet_css('flex_table', PAGE_ID);
+        }
+        // Register Droplet for the WebsiteBaker Search Function
+  	    if ($this->params[self::param_search]) {
+  		    if (!is_registered_droplet_search('flex_table', PAGE_ID)) {  
 	 			register_droplet_search('flex_table', PAGE_ID, 'flex_table');
-  		}
+  		    }
  		}
  		elseif (is_registered_droplet_search('flex_table', PAGE_ID)) {
  			unregister_droplet_search('flex_table', PAGE_ID);
  		}
  		
  		// Seiteninformationen bereitstellen?
-	  if ($this->params[self::param_page_header]) {
-	  	if (!is_registered_droplet_header('flex_table', PAGE_ID)) {
+	    if ($this->params[self::param_page_header]) {
+	  	    if (!is_registered_droplet_header('flex_table', PAGE_ID)) {
  				register_droplet_header('flex_table', PAGE_ID, 'flex_table');
-	  	}
-	  }
-	  else {
-	  	if (is_registered_droplet_header('flex_table', PAGE_ID)) {
-  			unregister_droplet_header('flex_table', PAGE_ID);
+	  	    }
+	    }
+	    else {
+	  	    if (is_registered_droplet_header('flex_table', PAGE_ID)) {
+  			    unregister_droplet_header('flex_table', PAGE_ID);
 			}
-	  }
-    
+	    }
+  	}
+  	else {
+  	    // LEPTON 2.x
+  	    if ($this->params[self::param_css]) {
+  	        // register for loading CSS file
+  	        $wb->get_helper('DropLEP')->register_css(PAGE_ID, 'flex_table', 'flex_table', 'flex_table.css');
+  	    } 
+  	    else {
+  	        $wb->get_helper('DropLEP')->unregister_css(PAGE_ID, 'flex_table', 'flex_table', 'flex_table.css'); 
+  	    }
+  	    if ($this->params[self::param_search]) {    
+  	        // register for LEPTON search
+  	        $wb->get_helper('DropLEP')->register_for_search(PAGE_ID, 'flex_table', 'flex_table');
+  	    }
+  	    else {
+  	        $wb->get_helper('DropLEP')->unregister_for_search(PAGE_ID, 'flex_table');
+  	    }
+  	    if ($this->params[self::param_page_header]) {
+  	        // register for sending page title, description and keywords
+  	        $wb->get_helper('Addons')->register_page_title(PAGE_ID, 'flexTable', 'flex_table');
+  	        $wb->get_helper('Addons')->register_page_description(PAGE_ID, 'flexTable', 'flex_table');
+  	        $wb->get_helper('Addons')->register_page_keywords(PAGE_ID, 'flexTable', 'flex_table');
+  	    }
+  	    else {
+  	        $wb->get_helper('Addons')->unregister_page_title(PAGE_ID, 'flex_table');
+  	        $wb->get_helper('Addons')->unregister_page_description(PAGE_ID, 'flex_table');
+  	        $wb->get_helper('Addons')->unregister_page_keywords(PAGE_ID, 'flex_table');
+  	    }
+  	}
     
     switch ($action):
   	case self::action_view_id:

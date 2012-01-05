@@ -34,7 +34,7 @@ if (defined('WB_PATH')) {
 $module_directory     = 'flex_table';
 $module_name          = 'flexTable';
 $module_function      = 'tool';
-$module_version       = '0.16';
+$module_version       = '0.18';
 $module_status        = 'Stable';
 $module_platform      = '2.8'; 
 $module_author        = 'Ralf Hertsch, Berlin (Germany)';
