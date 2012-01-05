@@ -49,7 +49,14 @@ else {
 	if (!defined('FLEX_TABLE_LANGUAGE')) define('FLEX_TABLE_LANGUAGE', LANGUAGE); // die Konstante gibt an in welcher Sprache flexTable aktuell arbeitet
 }
 
-require_once(WB_PATH.'/modules/kit_tools/class.droplets.php');
+if (defined('LEPTON_VERSION') && !defined('LEPTON_2')) {
+    // set LEPTON_2 identifier for further checks
+    require_once (WB_PATH . '/framework/addon.precheck.inc.php');
+    define('LEPTON_2', versionCompare(LEPTON_VERSION, '2.0', '>='));
+}
+else define('LEPTON_2', false);
+
+if (!LEPTON_2) require_once(WB_PATH.'/modules/kit_tools/class.droplets.php');
 require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.table.php');
 
 
@@ -88,28 +95,30 @@ if (!$dbFlexTable->sqlFieldExists(dbFlexTable::field_homepage)) {
 	}
 }
 
-// remove Droplets
-$dbDroplets = new dbDroplets();
-$droplets = array('flex_table', 'flex_detail');
-foreach ($droplets as $droplet) {
-	$where = array(dbDroplets::field_name => $droplet);
-	if (!$dbDroplets->sqlDeleteRecord($where)) {
-		$message = sprintf('[UPGRADE] Error uninstalling Droplet: %s', $dbDroplets->getError());
-	}	
-}
-
-// Install Droplets
-$droplets = new checkDroplets();
-$droplets->droplet_path = WB_PATH.'/modules/flex_table/droplets/';
-
-if ($droplets->insertDropletsIntoTable()) {
-  $message = sprintf(tool_msg_install_droplets_success, 'flexTables');
-}
-else {
-  $message = sprintf(tool_msg_install_droplets_failed, 'flexTables', $droplets->getError());
-}
-if ($message != "") {
-  echo '<script language="javascript">alert ("'.$message.'");</script>';
+if (!LEPTON_2) {
+    // remove Droplets
+    $dbDroplets = new dbDroplets();
+    $droplets = array('flex_table', 'flex_detail');
+    foreach ($droplets as $droplet) {
+    	$where = array(dbDroplets::field_name => $droplet);
+    	if (!$dbDroplets->sqlDeleteRecord($where)) {
+    		$message = sprintf('[UPGRADE] Error uninstalling Droplet: %s', $dbDroplets->getError());
+    	}	
+    }
+    
+    // Install Droplets
+    $droplets = new checkDroplets();
+    $droplets->droplet_path = WB_PATH.'/modules/flex_table/droplets/';
+    
+    if ($droplets->insertDropletsIntoTable()) {
+      $message = sprintf(tool_msg_install_droplets_success, 'flexTables');
+    }
+    else {
+      $message = sprintf(tool_msg_install_droplets_failed, 'flexTables', $droplets->getError());
+    }
+    if ($message != "") {
+      echo '<script language="javascript">alert ("'.$message.'");</script>';
+    }
 }
 
 // delete files
