@@ -74,8 +74,8 @@ foreach ($tables as $table) {
 	}
 }
 
-// Install Droplets
 if (!LEPTON_2) {
+    // WB & LEPTON 1.x - install Droplets
     $droplets = new checkDroplets();
     $droplets->droplet_path = WB_PATH.'/modules/flex_table/droplets/';
     
@@ -88,6 +88,21 @@ if (!LEPTON_2) {
     if ($message != "") {
       echo '<script language="javascript">alert ("'.$message.'");</script>';
     }
+}
+else {
+    // LEPTON_2 - import DropLEPs
+    if (!function_exists('dropleps_import')) 
+        require_once WB_PATH.'/modules/dropleps/include.php';
+    
+    $inst_dir = sanitize_path(dirname(__FILE__).'/install');
+    $temp_unzip = sanitize_path(WB_PATH.'/temp/unzip/');
+    $files = $admin->get_helper('Directory')->getFiles($inst_dir);
+    
+    if (is_array($files) && count($files)) {
+        foreach ($files as $file) {
+            dropleps_import($file, $temp_unzip);
+        }
+    }    
 }
 
 // Prompt Errors
