@@ -33,8 +33,8 @@ require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/initialize.php');
 if (!LEPTON_2) require_once(WB_PATH.'/modules/droplets_extension/interface.php');
 
 class tableFrontend {
-	
-	const request_action			= 'act';
+    
+    const request_action			= 'act';
 	const request_filter			= 'flt';
 
 	const action_default			= 'def';
@@ -119,102 +119,102 @@ class tableFrontend {
 	} // setParams()
 	
 	/**
-    * Set $this->error to $error
-    * 
-    * @param STR $error
-    */
-  public function setError($error) {
-  	$this->error = $error;
-  } // setError()
-
-  /**
-    * Get Error from $this->error;
-    * 
-    * @return STR $this->error
-    */
-  public function getError() {
-    return $this->error;
-  } // getError()
-
-  /**
-    * Check if $this->error is empty
-    * 
-    * @return BOOL
-    */
-  public function isError() {
-    return (bool) !empty($this->error);
-  } // isError
-
-  /**
-   * Reset Error to empty String
-   */
-  public function clearError() {
-  	$this->error = '';
-  }
-
-  /** Set $this->message to $message
-    * 
-    * @param STR $message
-    */
-  public function setMessage($message) {
-    $this->message = $message;
-  } // setMessage()
-
-  /**
-    * Get Message from $this->message;
-    * 
-    * @return STR $this->message
-    */
-  public function getMessage() {
-    return $this->message;
-  } // getMessage()
-
-  /**
-    * Check if $this->message is empty
-    * 
-    * @return BOOL
-    */
-  public function isMessage() {
-    return (bool) !empty($this->message);
-  } // isMessage
-  
-  /**
-   * Gibt das gewuenschte Template zurueck
-   * 
-   * @param STR $template
-   * @param ARRAY $template_data
-   */
-  public function getTemplate($template, $template_data) {
-  	global $parser;
-  	try {
-  		$result = $parser->get($this->template_path.$template, $template_data); 
-  	} catch (Exception $e) { 
-  		$this->setError(sprintf(ft_error_template_error, $template, $e->getMessage()));
-  		return false;
-  	}
-  	return $result;
-  } // getTemplate()
-  
-  private function setTempVars($vars=array()) {
-		$_SESSION[self::session_temp_vars] = http_build_query($vars);
-	} // setTempVars()
-	
-	private function getTempVars() {
-		if (isset($_SESSION[self::session_temp_vars])) {
-			parse_str($_SESSION[self::session_temp_vars], $vars);
-			foreach ($vars as $key => $value) {
-				if (!isset($_REQUEST[$key])) $_REQUEST[$key] = $value;
-			}
-			unset($_SESSION[self::session_temp_vars]);
-		}
-	} // getTempVars()
-	
-	/**
-   * Verhindert XSS Cross Site Scripting
-   * 
-   * @param REFERENCE ARRAY $request
-   * @return ARRAY $request
-   */
+     * Set $this->error to $error
+     * 
+     * @param STR $error
+     */
+    public function setError($error) {
+        $this->error = $error;
+    } // setError()
+    
+    /**
+      * Get Error from $this->error;
+      * 
+      * @return STR $this->error
+      */
+    public function getError() {
+        return $this->error;
+    } // getError()
+    
+    /**
+     * Check if $this->error is empty
+     * 
+     * @return BOOL
+     */
+    public function isError() {
+        return (bool) !empty($this->error);
+    } // isError
+    
+      /**
+       * Reset Error to empty String
+       */
+      public function clearError() {
+      	$this->error = '';
+      }
+    
+      /** Set $this->message to $message
+        * 
+        * @param STR $message
+        */
+      public function setMessage($message) {
+        $this->message = $message;
+      } // setMessage()
+    
+      /**
+        * Get Message from $this->message;
+        * 
+        * @return STR $this->message
+        */
+      public function getMessage() {
+        return $this->message;
+      } // getMessage()
+    
+      /**
+        * Check if $this->message is empty
+        * 
+        * @return BOOL
+        */
+      public function isMessage() {
+        return (bool) !empty($this->message);
+      } // isMessage
+      
+      /**
+       * Gibt das gewuenschte Template zurueck
+       * 
+       * @param STR $template
+       * @param ARRAY $template_data
+       */
+      public function getTemplate($template, $template_data) {
+      	global $parser;
+      	try {
+      		$result = $parser->get($this->template_path.$template, $template_data); 
+      	} catch (Exception $e) { 
+      		$this->setError(sprintf(ft_error_template_error, $template, $e->getMessage()));
+      		return false;
+      	}
+      	return $result;
+      } // getTemplate()
+      
+      private function setTempVars($vars=array()) {
+    		$_SESSION[self::session_temp_vars] = http_build_query($vars);
+    	} // setTempVars()
+    	
+    	private function getTempVars() {
+    		if (isset($_SESSION[self::session_temp_vars])) {
+    			parse_str($_SESSION[self::session_temp_vars], $vars);
+    			foreach ($vars as $key => $value) {
+    				if (!isset($_REQUEST[$key])) $_REQUEST[$key] = $value;
+    			}
+    			unset($_SESSION[self::session_temp_vars]);
+    		}
+    	} // getTempVars()
+    	
+    	/**
+       * Verhindert XSS Cross Site Scripting
+       * 
+       * @param REFERENCE ARRAY $request
+       * @return ARRAY $request
+       */
 	public function xssPrevent(&$request) { 
   	if (is_string($request)) {
 	    $request = html_entity_decode($request);
@@ -254,10 +254,15 @@ class tableFrontend {
             if (!is_registered_droplet_css('flex_table', PAGE_ID)) {
                 register_droplet_css('flex_table', PAGE_ID, 'flex_table', 'flex_table.css');
             }
+            if (!is_registered_droplet_js('flex_table', PAGE_ID)) {
+                register_droplet_css('flex_table', PAGE_ID, 'flex_table', 'flex_table.js');
+            }
         }
         elseif (is_registered_droplet_css('flex_table', PAGE_ID)) {
 		    unregister_droplet_css('flex_table', PAGE_ID);
+		    unregister_droplet_js('flex_table', PAGE_ID);
         }
+        
         // Register Droplet for the WebsiteBaker Search Function
   	    if ($this->params[self::param_search]) {
   		    if (!is_registered_droplet_search('flex_table', PAGE_ID)) {  
@@ -285,9 +290,11 @@ class tableFrontend {
   	    if ($this->params[self::param_css]) {
   	        // register for loading CSS file
   	        $wb->get_helper('DropLEP')->register_css(PAGE_ID, 'flex_table', 'flex_table', 'flex_table.css');
+  	        $wb->get_helper('DropLEP')->register_js(PAGE_ID, 'flex_table', 'flex_table', 'flex_table.js');
   	    } 
   	    else {
-  	        $wb->get_helper('DropLEP')->unregister_css(PAGE_ID, 'flex_table', 'flex_table', 'flex_table.css'); 
+  	        $wb->get_helper('DropLEP')->unregister_css(PAGE_ID, 'flex_table', 'flex_table', 'flex_table.css');
+  	        $wb->get_helper('DropLEP')->unregister_js(PAGE_ID, 'flex_table', 'flex_table', 'flex_table.js');  	         
   	    }
   	    if ($this->params[self::param_search]) {    
   	        // register for LEPTON search
@@ -361,19 +368,20 @@ class tableFrontend {
   	
   	// Definitionen einlesen
   	$SQL = sprintf( "SELECT * FROM %s WHERE %s='%s' ORDER BY FIND_IN_SET(%s, '%s')",
-										$dbFlexTableDefinition->getTableName(),
-										dbFlexTableDefinition::field_table_id,
-										$table_id,
-										dbFlexTableDefinition::field_id,
-										$table[dbFlexTable::field_definitions]);
-		$definitions = array();
-		if (!$dbFlexTableDefinition->sqlExec($SQL, $definitions)) {
+  			$dbFlexTableDefinition->getTableName(),
+  			dbFlexTableDefinition::field_table_id,
+  			$table_id,
+  	        dbFlexTableDefinition::field_id,
+  	        $table[dbFlexTable::field_definitions]
+  	        );
+	$definitions = array();
+	if (!$dbFlexTableDefinition->sqlExec($SQL, $definitions)) {
 			$this->setError(sprintf('[%s - %] %s', __METHOD__, __LINE__, $dbFlexTableDefinition->getError()));
 			return false;
-		}
-		$def_array = array();
-		$active_filter = '';
-		$active_filter_id = -1;
+	}
+	$def_array = array();
+	$active_filter = '';
+	$active_filter_id = -1;
   	foreach ($definitions as $def) {
   		if ($def[dbFlexTableDefinition::field_table_cell] == dbFlexTableDefinition::cell_true) {
   			// filter anlegen
@@ -386,15 +394,16 @@ class tableFrontend {
   			$field = $dbFlexTableCell->getFieldNameByType($def[dbFlexTableDefinition::field_type]);
   			if (!empty($field) && (($field != dbFlexTableCell::field_text) && ($field != dbFlexTableCell::field_html))) {
 		  		$SQL = sprintf( "SELECT %s AS filter FROM %s WHERE %s='%s' AND %s='%s' GROUP BY %s ORDER BY %s ASC",
-													$field,
-													$dbFlexTableCell->getTableName(),
-													dbFlexTableCell::field_table_id,
-													$table_id,
-													dbFlexTableCell::field_definition_id,
-													$def[dbFlexTableDefinition::field_id],
-													$field,
-													$field);
-					$result = array();
+		  		        $field,
+						$dbFlexTableCell->getTableName(),
+						dbFlexTableCell::field_table_id,
+						$table_id,
+						dbFlexTableCell::field_definition_id,
+						$def[dbFlexTableDefinition::field_id],
+						$field,
+						$field
+		  		        );
+				$result = array();
 					if (!$dbFlexTableCell->sqlExec($SQL, $result)) {
 						$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
 						return false;
@@ -410,7 +419,10 @@ class tableFrontend {
 		  			if (empty($item['filter'])) continue;
 		  			$txt = str_replace('||', '', $item['filter']);
 		  			$value = urlencode($item['filter']);
-		  			$filter_array[$item['filter']] = array('value' => $value, 'text' => $txt, 'selected' => ($act_filter == $item['filter']) ? 1 : 0);
+		  			$filter_array[$item['filter']] = array(
+		  			        'value' => $value, 
+		  			        'text' => $txt, 
+		  			        'selected' => ($act_filter == $item['filter']) ? 1 : 0);
 		  		}
 	  		}
 	  		else {
@@ -420,16 +432,21 @@ class tableFrontend {
 	  		}
   			// definitions array fuer das template
 	  		$def_array[$def[dbFlexTableDefinition::field_name]] = array(
-	  			'id'					=> $def[dbFlexTableDefinition::field_id],
-	  			'name'				=> $def[dbFlexTableDefinition::field_name],
-	  			'class'				=> $def[dbFlexTableDefinition::field_name],
-	  			'head'				=> $def[dbFlexTableDefinition::field_head],
-	  			'description'	=> $def[dbFlexTableDefinition::field_description],
-	  			'table_cell'	=> $def[dbFlexTableDefinition::field_table_cell],
-	  			'title'				=> $def[dbFlexTableDefinition::field_title],
-	  			'type'				=> $dbFlexTableDefinition->template_type_array[$def[dbFlexTableDefinition::field_type]],
-	  			'filter'			=> array(	'name' 		=> sprintf('%s_%s', self::request_filter, $def[dbFlexTableDefinition::field_id]),
-	  															'values'	=> $filter_array)
+	  			'id' => $def[dbFlexTableDefinition::field_id],
+	  			'name' => $def[dbFlexTableDefinition::field_name],
+	  			'class'	=> $def[dbFlexTableDefinition::field_name],
+	  			'head' => $def[dbFlexTableDefinition::field_head],
+	  			'description' => $def[dbFlexTableDefinition::field_description],
+	  			'table_cell' => $def[dbFlexTableDefinition::field_table_cell],
+	  			'title'	=> $def[dbFlexTableDefinition::field_title],
+	  			'type' => $dbFlexTableDefinition->template_type_array[$def[dbFlexTableDefinition::field_type]],
+	  			'filter' => array(
+	  			        'name' => sprintf('%s_%s', self::request_filter, $def[dbFlexTableDefinition::field_id]),
+	  			        'values'	=> $filter_array),
+	  		    'link' => sprintf('%s%s%s=',
+	  		            $this->page_link,
+	  		            (defined('LEPTON_VERSION') && isset($_GET['leptoken'])) ? sprintf('?leptoken=%s&amp;', $_GET['leptoken']) : '?',
+	  		            sprintf('%s_%s', self::request_filter, $def[dbFlexTableDefinition::field_id]))
 	  		);
   		}
   	}
@@ -517,13 +534,13 @@ class tableFrontend {
 		  	if (!$dbFlexTableCell->sqlExec($SQL, $order)) {
 					$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
 					return false;
-				}
-				$row_order = '';
-				foreach ($order as $ord) {
-					if (!empty($row_order)) $row_order .= ',';
-					$row_order .= "'".$ord[dbFlexTableCell::field_row_id]."'";
-				}
-				$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s' AND (%s='%s' OR %s='%s') AND %s IN (%s) ORDER BY %s ASC, FIND_IN_SET(%s, '%s')",
+			}
+			$row_order = '';
+			foreach ($order as $ord) {
+				if (!empty($row_order)) $row_order .= ',';
+				$row_order .= "'".$ord[dbFlexTableCell::field_row_id]."'";
+			}
+			$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s' AND (%s='%s' OR %s='%s') AND %s IN (%s) ORDER BY %s ASC, FIND_IN_SET(%s, '%s')",
 												$dbFlexTableCell->getTableName(),
 												dbFlexTableCell::field_table_id,
 												$table_id,
@@ -536,88 +553,93 @@ class tableFrontend {
 												dbFlexTableCell::field_row_id,
 												dbFlexTableCell::field_definition_id,
 												$table[dbFlexTable::field_definitions]
-											);
+											);				
 	  	}	
-  	}
-		$rows = array();
-		if (!$dbFlexTableCell->sqlExec($SQL, $rows)) {
-			$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
-			return false;
-		}
-		
-		$row_array = array();
-		$cells = array();
-		$row_id = -1;
-		$permalink = '';
+  	} // Filter
+	$rows = array();
+	if (!$dbFlexTableCell->sqlExec($SQL, $rows)) {
+		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
+		return false;
+	}
+	
+	$row_array = array();
+	$cells = array();
+	$row_id = -1;
+	$permalink = '';
 
-		foreach ($rows as $row) {
-			if ($row_id == -1) $row_id = $row[dbFlexTableCell::field_row_id];
-			if ($row_id != $row[dbFlexTableCell::field_row_id]) {
-				$row_array[$row_id] = array(
-					'id'				=> $row_id,
-					'cells'			=> $cells,
-					'link'			=> sprintf(	'%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
-  																http_build_query(array(	self::request_action => self::action_detail,
-  																												dbFlexTableRow::field_id => $row_id, 
-  																												dbFlexTable::field_id => $row[dbFlexTableCell::field_table_id]))),
-  				'permalink'	=> $permalink
-				);
-				$row_id = $row[dbFlexTableCell::field_row_id];
-				$cells = array();
-				$permalink = '';
-			}
-			$value = $dbFlexTableCell->getCellValueByType($row);
-			if (($row[dbFlexTableCell::field_definition_name] == 'permalink') && !empty($value)) {
-				// permalink
-				$permalink = WB_URL.PAGES_DIRECTORY.$value;
-				continue;
-			}
-			if (($row[dbFlexTableCell::field_definition_type] == dbFlexTableDefinition::type_media_link) && 
-					(!empty($value))) {
-				$ext = strtolower(pathinfo($this->media_path.$value, PATHINFO_EXTENSION));
-				$basename = pathinfo($this->media_path.$value, PATHINFO_FILENAME);
-				$media_type = $ext;
-				$width = 0;
-				$height = 0;
-				if (in_array($ext, $this->media_image_types)) { 
-					list($width, $height) = getimagesize($this->media_path.$value);
-				}
-				$media_data = array(
-					'ext'			=> $ext,
-					'url'			=> $this->media_url.$value,
-					'text'		=> $basename,
-					'width'		=> $width,
-					'height'	=> $height
-				);		
-			}
-			else {
-				$media_type = 'txt';
-				$media_data = array();
-			}
-			$cells[$row[dbFlexTableCell::field_id]] = array(
-				'id'		=> $row[dbFlexTableCell::field_id],
-				'value'	=> $value,
-				'class'	=> $row[dbFlexTableCell::field_definition_name],
-  			'media_type'	=> $media_type,
-  			'media_data'	=> $media_data
-			);
-		} // foreach $rows
-  	
-		if ($row_id != -1) {
-			$row_array[$row_id] = array(
-				'id'		=> $row_id,
-				'cells'	=> $cells,
-				'link'	=> sprintf(	'%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
-  													http_build_query(array(	self::request_action => self::action_detail,
-  																									dbFlexTableRow::field_id => $row_id, 
-  																									dbFlexTable::field_id => $row[dbFlexTableCell::field_table_id]))),
-  			'permalink'	=> $permalink
-			);
+	foreach ($rows as $row) {
+		if ($row_id == -1) $row_id = $row[dbFlexTableCell::field_row_id];
+		if ($row_id != $row[dbFlexTableCell::field_row_id]) {
+		    $row_array[$row_id] = array(		        
+		            'id' => $row_id,
+				    'cells'	=> $cells,
+				    'link' => sprintf('%s%s%s', 
+				            $this->page_link, 
+				            (strpos($this->page_link, '?') === false) ? '?' : '&', 
+							http_build_query(array(	
+							        self::request_action => self::action_detail,
+									dbFlexTableRow::field_id => $row_id, 
+									dbFlexTable::field_id => $row[dbFlexTableCell::field_table_id]
+							        ))
+				            ),
+			        'permalink'	=> $permalink
+			    );
+			$row_id = $row[dbFlexTableCell::field_row_id];
+			$cells = array();
+			$permalink = '';
 		}
-		
+		$value = $dbFlexTableCell->getCellValueByType($row);
+		if (($row[dbFlexTableCell::field_definition_name] == 'permalink') && !empty($value)) {
+			// permalink
+			$permalink = WB_URL.PAGES_DIRECTORY.$value;
+			continue;
+		}
+		if (($row[dbFlexTableCell::field_definition_type] == dbFlexTableDefinition::type_media_link) && 
+				(!empty($value))) {
+			$ext = strtolower(pathinfo($this->media_path.$value, PATHINFO_EXTENSION));
+			$basename = pathinfo($this->media_path.$value, PATHINFO_FILENAME);
+			$media_type = $ext;
+			$width = 0;
+			$height = 0;
+			if (in_array($ext, $this->media_image_types)) { 
+				list($width, $height) = getimagesize($this->media_path.$value);
+			}
+			$media_data = array(
+				'ext'			=> $ext,
+				'url'			=> $this->media_url.$value,
+				'text'		=> $basename,
+				'width'		=> $width,
+				'height'	=> $height
+			);		
+		}
+		else {
+			$media_type = 'txt';
+			$media_data = array();
+		}
+		$cells[$row[dbFlexTableCell::field_id]] = array(
+			'id'		=> $row[dbFlexTableCell::field_id],
+			'value'	=> $value,
+			'class'	=> $row[dbFlexTableCell::field_definition_name],
+		'media_type'	=> $media_type,
+		'media_data'	=> $media_data
+		);
+	} // foreach $rows
+
+	if ($row_id != -1) {
+		$row_array[$row_id] = array(
+			'id'		=> $row_id,
+			'cells'	=> $cells,
+			'link'	=> sprintf(	'%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
+												http_build_query(array(	self::request_action => self::action_detail,
+																								dbFlexTableRow::field_id => $row_id, 
+																								dbFlexTable::field_id => $row[dbFlexTableCell::field_table_id]))),
+		'permalink'	=> $permalink
+		);
+	}
+	
   	$data = array(
   		'table'					=> $table_array,
-  		'rows'					=> $row_array,
+  	  'rows'					=> $row_array,
   		'page_link'			=> $this->page_link,
   		'anchor'				=> array(	'detail'	=> $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgAnchorDetail),
   															'table'		=> $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgAnchorTable))

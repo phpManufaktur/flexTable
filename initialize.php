@@ -32,11 +32,8 @@ if (defined('WB_PATH')) {
 // end include class.secure.php
 
 // set LEPTON_2 identifier for further checks
-if (defined('LEPTON_VERSION')) {
-    require_once (WB_PATH . '/framework/addon.precheck.inc.php');
-    define('LEPTON_2', versionCompare(LEPTON_VERSION, '2.0', '>='));
-}
-else define('LEPTON_2', false);
+if (!defined('LEPTON_2'))
+    define('LEPTON_2', defined('LEPTON_VERSION') ? version_compare(LEPTON_VERSION, '2', '>=') : false);
 
 // include GENERAL language file
 if (! file_exists(WB_PATH . '/modules/kit_tools/languages/' . LANGUAGE . '.php')) {

@@ -31,11 +31,15 @@ if (defined('WB_PATH')) {
 }
 // end include class.secure.php
 
+// set LEPTON_2 identifier for further checks
+if (!defined('LEPTON_2'))
+    define('LEPTON_2', defined('LEPTON_VERSION') ? version_compare(LEPTON_VERSION, '2', '>=') : false);
+
 // Checking Requirements
 
 $PRECHECK['WB_VERSION'] = array('VERSION' => '2.8', 'OPERATOR' => '>=');
 $PRECHECK['PHP_VERSION'] = array('VERSION' => '5.2.0', 'OPERATOR' => '>=');
-if (!defined('LEPTON_VERSION') || versionCompare(LEPTON_VERSION, '2.0.0.0', '<=')) {
+if (!LEPTON_2) {
     $PRECHECK['WB_ADDONS'] = array(
     	'dbconnect_le'	=> array('VERSION' => '0.65', 'OPERATOR' => '>='),
     	'dwoo' => array('VERSION' => '0.11', 'OPERATOR' => '>='),

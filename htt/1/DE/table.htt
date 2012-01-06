@@ -21,8 +21,9 @@
      {if $table.table_filter == '1'}
       <tr>
         <form>  
-        {foreach $table.definition as definition}
-        <td><select name="{$definition.filter.name}" onchange="javascript:window.location='{$page_link}?{$definition.filter.name}='+this.form.{$definition.filter.name}.options[this.form.{$definition.filter.name}.selectedIndex].value+'#{$anchor.table}';">
+        {foreach $table.definition as definition} 
+        <!--<td><select name="{$definition.filter.name}" onchange="javascript:window.location='{$page_link}?{$definition.filter.name}='+this.form.{$definition.filter.name}.options[this.form.{$definition.filter.name}.selectedIndex].value+'#{$anchor.table}';">-->
+        <td><select id="{$definition.filter.name}" name="{$definition.filter.name}" onchange="javascript:ft_execOnChange('{$definition.link}','{$definition.filter.name}');"> 
           {foreach $definition.filter.values option}
           <option value="{$option.value}"{if $option.selected == 1} selected="selected"{/if}>{$option.text}</option>
           {/foreach}

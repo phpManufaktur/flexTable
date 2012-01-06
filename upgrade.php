@@ -49,12 +49,9 @@ else {
 	if (!defined('FLEX_TABLE_LANGUAGE')) define('FLEX_TABLE_LANGUAGE', LANGUAGE); // die Konstante gibt an in welcher Sprache flexTable aktuell arbeitet
 }
 
-if (defined('LEPTON_VERSION') && !defined('LEPTON_2')) {
-    // set LEPTON_2 identifier for further checks
-    require_once (WB_PATH . '/framework/addon.precheck.inc.php');
-    define('LEPTON_2', versionCompare(LEPTON_VERSION, '2.0', '>='));
-}
-else define('LEPTON_2', false);
+// set LEPTON_2 identifier for further checks
+if (!defined('LEPTON_2'))
+    define('LEPTON_2', defined('LEPTON_VERSION') ? version_compare(LEPTON_VERSION, '2', '>=') : false);
 
 if (!LEPTON_2) require_once(WB_PATH.'/modules/kit_tools/class.droplets.php');
 require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.table.php');
