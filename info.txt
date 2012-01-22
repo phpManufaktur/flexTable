@@ -3,6 +3,8 @@ flexTable
 Ralf Hertsch, Stockholmer Str. 31, 13359 Berlin (Germany)
 http://phpManufaktur.de - ralf.hertsch@phpManufaktur.de
 
+cc
+
 Release 0.19
 2012-01-06
 fixed: problem with version comparing
