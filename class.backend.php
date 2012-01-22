@@ -728,6 +728,9 @@ class tableBackend {
 		$checked = true;
 		$message = '';
 		
+		// ignore timestamp
+		unset($table[dbFlexTable::field_timestamp]);
+		
 		foreach ($table as $field => $value) {
 			switch($field):
 			case dbFlexTable::field_id:

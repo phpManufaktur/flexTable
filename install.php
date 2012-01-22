@@ -52,7 +52,7 @@ else {
 // set LEPTON_2 identifier for further checks
 if (!defined('LEPTON_2'))
     define('LEPTON_2', defined('LEPTON_VERSION') ? version_compare(LEPTON_VERSION, '2', '>=') : false);
-
+echo LEPTON_VERSION."LEP2: ".LEPTON_2;
 if (!LEPTON_2) require_once(WB_PATH.'/modules/kit_tools/class.droplets.php');
 require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.table.php');
 

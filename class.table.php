@@ -156,7 +156,7 @@ class dbFlexTableDefinition extends dbConnectLE {
   	$this->addFieldDefinition(self::field_name, "VARCHAR(50) NOT NULL DEFAULT ''");
   	$this->addFieldDefinition(self::field_head, "VARCHAR(50) NOT NULL DEFAULT ''");
   	$this->addFieldDefinition(self::field_title, "VARCHAR(255) NOT NULL DEFAULT ''");
-  	$this->addFieldDefinition(self::field_description, "TEXT NOT NULL DEFAULT ''");
+  	$this->addFieldDefinition(self::field_description, "TEXT NOT NULL");
   	$this->addFieldDefinition(self::field_type, "TINYINT NOT NULL DEFAULT '".self::type_undefined."'");
   	$this->addFieldDefinition(self::field_table_cell, "TINYINT NOT NULL DEFAULT '".self::cell_true."'");
   	$this->addFieldDefinition(self::field_timestamp, "TIMESTAMP");
@@ -256,9 +256,9 @@ class dbFlexTableCell extends dbConnectLE {
   	$this->addFieldDefinition(self::field_datetime, "DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00'");
   	$this->addFieldDefinition(self::field_float, "FLOAT(11) NOT NULL DEFAULT '0'");
   	$this->addFieldDefinition(self::field_integer, "INT(11) NOT NULL DEFAULT '0'");
-  	$this->addFieldDefinition(self::field_text, "TEXT NOT NULL DEFAULT ''");
+  	$this->addFieldDefinition(self::field_text, "TEXT NOT NULL");
   	$this->addFieldDefinition(self::field_media_link, "VARCHAR(255) NOT NULL DEFAULT ''"); 
-  	$this->addFieldDefinition(self::field_html, "TEXT NOT NULL DEFAULT ''", false, false, true);
+  	$this->addFieldDefinition(self::field_html, "TEXT NOT NULL", false, false, true);
   	$this->addFieldDefinition(self::field_timestamp, "TIMESTAMP");
   	$this->setIndexFields(array(self::field_table_id, self::field_row_id, self::field_definition_id));	
   	$this->checkFieldDefinitions();
