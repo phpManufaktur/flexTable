@@ -3,7 +3,9 @@ flexTable
 Ralf Hertsch, Stockholmer Str. 31, 13359 Berlin (Germany)
 http://phpManufaktur.de - ralf.hertsch@phpManufaktur.de
 
-cc
+Release 0.20
+2012-02-01
+fixed: problem auto loading flext_table.js (for table filter)
 
 Release 0.19
 2012-01-06

@@ -60,6 +60,7 @@ class tableFrontend {
 	const param_preset									= 'preset';
 	const param_name										= 'name';
 	const param_css											= 'css';
+	const param_js = 'js';
 	const param_search									= 'search';
 	const param_page_header							= 'page_header';
 	const param_table_header						= 'table_header';
@@ -69,9 +70,10 @@ class tableFrontend {
 	const param_show_last								= 'show_last';		
 	
 	private $params = array(
-		self::param_preset										=> 1, 
-		self::param_name											=> '',
-		self::param_css												=> true,
+		self::param_preset	=> 1, 
+		self::param_name => '',
+		self::param_css	=> true,
+	    self::param_js => true,
 		self::param_search										=> true,
 		self::param_page_header								=> true,
 		self::param_table_header							=> true,
@@ -255,14 +257,14 @@ class tableFrontend {
                 register_droplet_css('flex_table', PAGE_ID, 'flex_table', 'flex_table.css');
             }
             if (!is_registered_droplet_js('flex_table', PAGE_ID)) {
-                register_droplet_css('flex_table', PAGE_ID, 'flex_table', 'flex_table.js');
+                register_droplet_js('flex_table', PAGE_ID, 'flex_table', 'flex_table.js');
             }
         }
         elseif (is_registered_droplet_css('flex_table', PAGE_ID)) {
 		    unregister_droplet_css('flex_table', PAGE_ID);
 		    unregister_droplet_js('flex_table', PAGE_ID);
         }
-        
+                
         // Register Droplet for the WebsiteBaker Search Function
   	    if ($this->params[self::param_search]) {
   		    if (!is_registered_droplet_search('flex_table', PAGE_ID)) {  
