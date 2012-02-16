@@ -4,10 +4,9 @@ Ralf Hertsch, Stockholmer Str. 31, 13359 Berlin (Germany)
 http://phpManufaktur.de - ralf.hertsch@phpManufaktur.de
 
 Release 0.21
-
+2012-02-16
 changed: introduce $_SESSION['KIT_HTML_REQUEST'] to mark fields which should not
   processed by xssPrevent()
-
 
 Release 0.20
 2012-02-01
