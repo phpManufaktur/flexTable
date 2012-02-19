@@ -1,7 +1,7 @@
 <?php
 /**
  * flexTable
- * 
+ *
  * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
  * @link http://phpmanufaktur.de
  * @copyright 2011
@@ -33,7 +33,7 @@ require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/initialize.php');
 if (!LEPTON_2) require_once(WB_PATH.'/modules/droplets_extension/interface.php');
 
 class tableFrontend {
-    
+
     const request_action			= 'act';
 	const request_filter			= 'flt';
 
@@ -41,7 +41,7 @@ class tableFrontend {
 	const action_table				= 'tbl';
 	const action_detail				= 'det';
 	const action_view_id			= 'id';
-	
+
 	private $page_link 								= '';
 	private $img_url									= '';
 	private $template_path						= '';
@@ -49,14 +49,14 @@ class tableFrontend {
 	private $message									= '';
 	private $media_url								= '';
 	private $media_path								= '';
-	
+
 	private $media_file_types					= array();
 	private $media_image_types				= array();
 	private $media_doc_types					= array();
-	
+
 	const mode_table										= 'table';
 	const mode_detail										= 'detail';
-	
+
 	const param_preset									= 'preset';
 	const param_name										= 'name';
 	const param_css											= 'css';
@@ -66,11 +66,11 @@ class tableFrontend {
 	const param_table_header						= 'table_header';
 	const param_table_filter						= 'table_filter';
 	const param_mode										= 'mode';
-	const param_rows										= 'rows';	
-	const param_show_last								= 'show_last';		
-	
+	const param_rows										= 'rows';
+	const param_show_last								= 'show_last';
+
 	private $params = array(
-		self::param_preset	=> 1, 
+		self::param_preset	=> 1,
 		self::param_name => '',
 		self::param_css	=> true,
 	    self::param_js => true,
@@ -82,18 +82,18 @@ class tableFrontend {
 		self::param_rows											=> '',
 		self::param_show_last									=> 0
 	);
-	
+
 	const filter_none				= 'NONE';
 	const filter_asc				= 'ASC';
 	const filter_desc				= 'DESC';
-	
+
 	public function __construct() {
 		global $kitLibrary;
 		global $dbFlexTableCfg;
 		$url = '';
-		$_SESSION['FRONTEND'] = true;	
+		$_SESSION['FRONTEND'] = true;
 		$kitLibrary->getPageLinkByPageID(PAGE_ID, $url);
-		$this->page_link = $url; 
+		$this->page_link = $url;
 		$this->template_path = WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/htt/'.$this->params[self::param_preset].'/'.FLEX_TABLE_LANGUAGE.'/' ;
 		$this->img_url = WB_URL. '/modules/'.basename(dirname(__FILE__)).'/images/';
 		$this->media_url = WB_URL.MEDIA_DIRECTORY.'/'.$dbFlexTableCfg->getValue(dbFlexTableCfg::cfgMediaDirectory).'/';
@@ -103,11 +103,11 @@ class tableFrontend {
 		$this->media_image_types = $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgImageFileTypes);
 		$this->media_file_types = array_merge($this->media_image_types, $this->media_doc_types);
 	} // __construct()
-	
+
 	public function getParams() {
 		return $this->params;
 	} // getParams()
-	
+
 	public function setParams($params = array()) {
 		$this->params = $params;
 		$this->template_path = WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/htt/'.$this->params[self::param_preset].'/'.FLEX_TABLE_LANGUAGE.'/';
@@ -119,88 +119,88 @@ class tableFrontend {
 		if (!isset($this->params[self::param_mode])) $this->params[self::param_mode] = self::mode_table;
 		return true;
 	} // setParams()
-	
+
 	/**
      * Set $this->error to $error
-     * 
+     *
      * @param STR $error
      */
     public function setError($error) {
         $this->error = $error;
     } // setError()
-    
+
     /**
       * Get Error from $this->error;
-      * 
+      *
       * @return STR $this->error
       */
     public function getError() {
         return $this->error;
     } // getError()
-    
+
     /**
      * Check if $this->error is empty
-     * 
+     *
      * @return BOOL
      */
     public function isError() {
         return (bool) !empty($this->error);
     } // isError
-    
+
       /**
        * Reset Error to empty String
        */
       public function clearError() {
       	$this->error = '';
       }
-    
+
       /** Set $this->message to $message
-        * 
+        *
         * @param STR $message
         */
       public function setMessage($message) {
         $this->message = $message;
       } // setMessage()
-    
+
       /**
         * Get Message from $this->message;
-        * 
+        *
         * @return STR $this->message
         */
       public function getMessage() {
         return $this->message;
       } // getMessage()
-    
+
       /**
         * Check if $this->message is empty
-        * 
+        *
         * @return BOOL
         */
       public function isMessage() {
         return (bool) !empty($this->message);
       } // isMessage
-      
+
       /**
        * Gibt das gewuenschte Template zurueck
-       * 
+       *
        * @param STR $template
        * @param ARRAY $template_data
        */
       public function getTemplate($template, $template_data) {
       	global $parser;
       	try {
-      		$result = $parser->get($this->template_path.$template, $template_data); 
-      	} catch (Exception $e) { 
+      		$result = $parser->get($this->template_path.$template, $template_data);
+      	} catch (Exception $e) {
       		$this->setError(sprintf(ft_error_template_error, $template, $e->getMessage()));
       		return false;
       	}
       	return $result;
       } // getTemplate()
-      
+
       private function setTempVars($vars=array()) {
     		$_SESSION[self::session_temp_vars] = http_build_query($vars);
     	} // setTempVars()
-    	
+
     	private function getTempVars() {
     		if (isset($_SESSION[self::session_temp_vars])) {
     			parse_str($_SESSION[self::session_temp_vars], $vars);
@@ -210,14 +210,14 @@ class tableFrontend {
     			unset($_SESSION[self::session_temp_vars]);
     		}
     	} // getTempVars()
-    	
+
     	/**
        * Verhindert XSS Cross Site Scripting
-       * 
+       *
        * @param REFERENCE ARRAY $request
        * @return ARRAY $request
        */
-	public function xssPrevent(&$request) { 
+	public function xssPrevent(&$request) {
   	if (is_string($request)) {
 	    $request = html_entity_decode($request);
 	    $request = strip_tags($request);
@@ -226,18 +226,18 @@ class tableFrontend {
   	}
 	  return $request;
   } // xssPrevent()
-	
+
   /**
    * ACTION HANDLER
    * @return STR result
    */
-  public function action() { 
+  public function action() {
     global $wb;
-  	
+
   	/**
-     * to prevent cross site scripting XSS it is important to look also to 
+     * to prevent cross site scripting XSS it is important to look also to
      * $_REQUESTs which are needed by other KIT addons. Addons which need
-     * a $_REQUEST with HTML must set this key in $_SESSION['KIT_HTML_REQUEST']
+     * a $_REQUEST with HTML should set a key in $_SESSION['KIT_HTML_REQUEST']
      */
     $html_allowed = array();
     if (isset($_SESSION['KIT_HTML_REQUEST'])) $html_allowed = $_SESSION['KIT_HTML_REQUEST'];
@@ -246,10 +246,10 @@ class tableFrontend {
     $_SESSION['KIT_HTML_REQUEST'] = $html_allowed;
     foreach ($_REQUEST as $key => $value) {
 	  	if (!in_array($key, $html_allowed)) {
-	  		$_REQUEST[$key] = $this->xssPrevent($value);	  			
-	  	} 
+	  		$_REQUEST[$key] = $this->xssPrevent($value);
+	  	}
 	  }
-	  
+
 	  // check the mode
 	  if ($this->params[self::param_mode] == self::mode_table) {
 	  	$action = isset($_REQUEST[self::request_action]) ? $_REQUEST[self::request_action] : self::action_default;
@@ -258,9 +258,9 @@ class tableFrontend {
 	  	// detail mode
 	  	$action = isset($_REQUEST[self::request_action]) ? $_REQUEST[self::request_action] : self::action_view_id;
 	  }
-	  
+
   	// CSS laden?
-  	if (!LEPTON_2) { 
+  	if (!LEPTON_2) {
         if ($this->params[self::param_css]) {
             if (!is_registered_droplet_css('flex_table', PAGE_ID)) {
                 register_droplet_css('flex_table', PAGE_ID, 'flex_table', 'flex_table.css');
@@ -273,17 +273,17 @@ class tableFrontend {
 		    unregister_droplet_css('flex_table', PAGE_ID);
 		    unregister_droplet_js('flex_table', PAGE_ID);
         }
-                
+
         // Register Droplet for the WebsiteBaker Search Function
   	    if ($this->params[self::param_search]) {
-  		    if (!is_registered_droplet_search('flex_table', PAGE_ID)) {  
+  		    if (!is_registered_droplet_search('flex_table', PAGE_ID)) {
 	 			register_droplet_search('flex_table', PAGE_ID, 'flex_table');
   		    }
  		}
  		elseif (is_registered_droplet_search('flex_table', PAGE_ID)) {
  			unregister_droplet_search('flex_table', PAGE_ID);
  		}
- 		
+
  		// Seiteninformationen bereitstellen?
 	    if ($this->params[self::param_page_header]) {
 	  	    if (!is_registered_droplet_header('flex_table', PAGE_ID)) {
@@ -302,12 +302,12 @@ class tableFrontend {
   	        // register for loading CSS file
   	        $wb->get_helper('DropLEP')->register_css(PAGE_ID, 'flex_table', 'flex_table', 'flex_table.css');
   	        $wb->get_helper('DropLEP')->register_js(PAGE_ID, 'flex_table', 'flex_table', 'flex_table.js');
-  	    } 
+  	    }
   	    else {
   	        $wb->get_helper('DropLEP')->unregister_css(PAGE_ID, 'flex_table', 'flex_table', 'flex_table.css');
-  	        $wb->get_helper('DropLEP')->unregister_js(PAGE_ID, 'flex_table', 'flex_table', 'flex_table.js');  	         
+  	        $wb->get_helper('DropLEP')->unregister_js(PAGE_ID, 'flex_table', 'flex_table', 'flex_table.js');
   	    }
-  	    if ($this->params[self::param_search]) {    
+  	    if ($this->params[self::param_search]) {
   	        // register for LEPTON search
   	        $wb->get_helper('DropLEP')->register_for_search(PAGE_ID, 'flex_table', 'flex_table');
   	    }
@@ -326,7 +326,7 @@ class tableFrontend {
   	        $wb->get_helper('Addons')->unregister_page_keywords(PAGE_ID, 'flex_table');
   	    }
   	}
-    
+
     switch ($action):
   	case self::action_view_id:
   		$result = $this->showID();
@@ -339,17 +339,17 @@ class tableFrontend {
 		default:
 		 	$result = $this->showTable();
 		endswitch;
-  	
+
 		if ($this->isError()) {
   		$data = array('error' => $this->getError());
   		$result = $this->getTemplate('error.htt', $data);
   	}
 		return $result;
   } // action
-  
+
   /**
    * Stellt die Daten der Tabelle zusammen und uebergibt sie an das Template table.htt
-   * 
+   *
    * @return STR flexTable
    */
   public function showTable() {
@@ -357,12 +357,12 @@ class tableFrontend {
   	global $dbFlexTableCell;
   	global $dbFlexTableDefinition;
   	global $dbFlexTableCfg;
-  	
+
   	if (empty($this->params[self::param_name])) {
   		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, ft_error_table_name_missing));
   		return false;
   	}
-  	
+
   	// Tabellendaten einlesen
   	$where = array(dbFlexTable::field_name => $this->params[self::param_name]);
   	$table = array();
@@ -376,7 +376,7 @@ class tableFrontend {
   	}
   	$table = $table[0];
   	$table_id = $table[dbFlexTable::field_id];
-  	
+
   	// Definitionen einlesen
   	$SQL = sprintf( "SELECT * FROM %s WHERE %s='%s' ORDER BY FIND_IN_SET(%s, '%s')",
   			$dbFlexTableDefinition->getTableName(),
@@ -399,7 +399,7 @@ class tableFrontend {
   			if (isset($_REQUEST[sprintf('%s_%s', self::request_filter, $def[dbFlexTableDefinition::field_id])]) &&
   					$_REQUEST[sprintf('%s_%s', self::request_filter, $def[dbFlexTableDefinition::field_id])] != self::filter_none) {
   				$active_filter = $_REQUEST[sprintf('%s_%s', self::request_filter, $def[dbFlexTableDefinition::field_id])];
-  				$active_filter_id = $def[dbFlexTableDefinition::field_id];	
+  				$active_filter_id = $def[dbFlexTableDefinition::field_id];
   			}
   			$act_filter = isset($_REQUEST[sprintf('%s_%s', self::request_filter, $def[dbFlexTableDefinition::field_id])]) ? $_REQUEST[sprintf('%s_%s', self::request_filter, $def[dbFlexTableDefinition::field_id])] : '';
   			$field = $dbFlexTableCell->getFieldNameByType($def[dbFlexTableDefinition::field_type]);
@@ -419,7 +419,7 @@ class tableFrontend {
 						$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
 						return false;
 					}
-					
+
 					$filter_array = array(
 						self::filter_none => array('value' => self::filter_none, 	'text' => ft_filter_none, 'selected' => ($act_filter == self::filter_none) ? 1 : 0),
 						self::filter_asc	=> array('value' => self::filter_asc, 	'text' => ft_filter_asc, 'selected' => ($act_filter == self::filter_asc) ? 1 : 0),
@@ -431,8 +431,8 @@ class tableFrontend {
 		  			$txt = str_replace('||', '', $item['filter']);
 		  			$value = urlencode($item['filter']);
 		  			$filter_array[$item['filter']] = array(
-		  			        'value' => $value, 
-		  			        'text' => $txt, 
+		  			        'value' => $value,
+		  			        'text' => $txt,
 		  			        'selected' => ($act_filter == $item['filter']) ? 1 : 0);
 		  		}
 	  		}
@@ -461,7 +461,7 @@ class tableFrontend {
 	  		);
   		}
   	}
-  	
+
   	$table_array = array(
   		'id'						=> $table[dbFlexTable::field_id],
   		'name'					=> $table[dbFlexTable::field_name],
@@ -471,7 +471,7 @@ class tableFrontend {
   		'title'					=> $table[dbFlexTable::field_title],
   		'keywords'			=> $table[dbFlexTable::field_keywords],
   		'table_header'	=> ($this->params[self::param_table_header]) ? 1 : 0,
-  		'table_filter'	=> ($this->params[self::param_table_filter]) ? 1 : 0  	
+  		'table_filter'	=> ($this->params[self::param_table_filter]) ? 1 : 0
   	);
   	if ($active_filter_id == -1) {
 	  	$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s' AND (%s='%s' OR %s='%s') ORDER BY %s ASC, FIND_IN_SET(%s, '%s')",
@@ -486,7 +486,7 @@ class tableFrontend {
 											dbFlexTableCell::field_definition_id,
 											$table[dbFlexTable::field_definitions]
 										);
-  	}									
+  	}
   	else {
   		// Filter verwenden
   		$where = array(dbFlexTableDefinition::field_id => $active_filter_id);
@@ -564,15 +564,15 @@ class tableFrontend {
 												dbFlexTableCell::field_row_id,
 												dbFlexTableCell::field_definition_id,
 												$table[dbFlexTable::field_definitions]
-											);				
-	  	}	
+											);
+	  	}
   	} // Filter
 	$rows = array();
 	if (!$dbFlexTableCell->sqlExec($SQL, $rows)) {
 		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableCell->getError()));
 		return false;
 	}
-	
+
 	$row_array = array();
 	$cells = array();
 	$row_id = -1;
@@ -581,15 +581,15 @@ class tableFrontend {
 	foreach ($rows as $row) {
 		if ($row_id == -1) $row_id = $row[dbFlexTableCell::field_row_id];
 		if ($row_id != $row[dbFlexTableCell::field_row_id]) {
-		    $row_array[$row_id] = array(		        
+		    $row_array[$row_id] = array(
 		            'id' => $row_id,
 				    'cells'	=> $cells,
-				    'link' => sprintf('%s%s%s', 
-				            $this->page_link, 
-				            (strpos($this->page_link, '?') === false) ? '?' : '&', 
-							http_build_query(array(	
+				    'link' => sprintf('%s%s%s',
+				            $this->page_link,
+				            (strpos($this->page_link, '?') === false) ? '?' : '&',
+							http_build_query(array(
 							        self::request_action => self::action_detail,
-									dbFlexTableRow::field_id => $row_id, 
+									dbFlexTableRow::field_id => $row_id,
 									dbFlexTable::field_id => $row[dbFlexTableCell::field_table_id]
 							        ))
 				            ),
@@ -605,14 +605,14 @@ class tableFrontend {
 			$permalink = WB_URL.PAGES_DIRECTORY.$value;
 			continue;
 		}
-		if (($row[dbFlexTableCell::field_definition_type] == dbFlexTableDefinition::type_media_link) && 
+		if (($row[dbFlexTableCell::field_definition_type] == dbFlexTableDefinition::type_media_link) &&
 				(!empty($value))) {
 			$ext = strtolower(pathinfo($this->media_path.$value, PATHINFO_EXTENSION));
 			$basename = pathinfo($this->media_path.$value, PATHINFO_FILENAME);
 			$media_type = $ext;
 			$width = 0;
 			$height = 0;
-			if (in_array($ext, $this->media_image_types)) { 
+			if (in_array($ext, $this->media_image_types)) {
 				list($width, $height) = getimagesize($this->media_path.$value);
 			}
 			$media_data = array(
@@ -621,7 +621,7 @@ class tableFrontend {
 				'text'		=> $basename,
 				'width'		=> $width,
 				'height'	=> $height
-			);		
+			);
 		}
 		else {
 			$media_type = 'txt';
@@ -640,14 +640,14 @@ class tableFrontend {
 		$row_array[$row_id] = array(
 			'id'		=> $row_id,
 			'cells'	=> $cells,
-			'link'	=> sprintf(	'%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
+			'link'	=> sprintf(	'%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&',
 												http_build_query(array(	self::request_action => self::action_detail,
-																								dbFlexTableRow::field_id => $row_id, 
+																								dbFlexTableRow::field_id => $row_id,
 																								dbFlexTable::field_id => $row[dbFlexTableCell::field_table_id]))),
 		'permalink'	=> $permalink
 		);
 	}
-	
+
   	$data = array(
   		'table'					=> $table_array,
   	  'rows'					=> $row_array,
@@ -657,11 +657,11 @@ class tableFrontend {
   	);
   	return $this->getTemplate('table.htt', $data);
   } // showTable()
-  
+
   /**
    * Show the details of a row record - also this items which are not shown in the table
    * showDetail() can be called from the table in "table" mode or from showID() in "detail" mode
-   * 
+   *
    * @param INT $row_id
    * @return MIXED STR detail dialog on success or BOOL FALSE on error
    */
@@ -671,7 +671,7 @@ class tableFrontend {
   	global $dbFlexTableDefinition;
   	global $dbFlexTableCfg;
   	global $dbFlexTableRow;
-  	
+
   	if ($this->params[self::param_mode] == self::mode_detail) {
   		// flexTable works in "detail" mode!
   		if ($row_id < 1) {
@@ -697,9 +697,9 @@ class tableFrontend {
   			$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, ft_error_row_id_missing));
   			return false;
   		}
-  	 	$table_id = (isset($_REQUEST[dbFlexTable::field_id])) ? $_REQUEST[dbFlexTable::field_id] : -1; 	
+  	 	$table_id = (isset($_REQUEST[dbFlexTable::field_id])) ? $_REQUEST[dbFlexTable::field_id] : -1;
   	}
-  	
+
   	if ($table_id < 1) {
   		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, dt_error_table_id_missing));
   		return false;
@@ -726,8 +726,8 @@ class tableFrontend {
   		'title'				=> $table[dbFlexTable::field_title],
   		'keywords'		=> $table[dbFlexTable::field_keywords]
   	);
-  	
-  	
+
+
   	$SQL = sprintf(	"SELECT * FROM %s WHERE %s='%s'ORDER BY FIND_IN_SET(%s, '%s')",
 										$dbFlexTableCell->getTableName(),
 										dbFlexTableCell::field_row_id,
@@ -742,7 +742,7 @@ class tableFrontend {
   	}
   	$items_array = array();
   	$permalink = '';
-  	
+
   	foreach ($items as $item) {
   		$where = array(dbFlexTableDefinition::field_id => $item[dbFlexTableCell::field_definition_id]);
   		$definition = array();
@@ -756,14 +756,14 @@ class tableFrontend {
   		}
   		$definition = $definition[0];
   		$value = $dbFlexTableCell->getCellValueByType($item);
-  		
+
   		if (($item[dbFlexTableCell::field_definition_name] == 'permalink') && !empty($value)) {
 				// permalink
 				$permalink = WB_URL.PAGES_DIRECTORY.$value;
 				continue;
 			}
-			
-  		if (($item[dbFlexTableCell::field_definition_type] == dbFlexTableDefinition::type_media_link) && 
+
+  		if (($item[dbFlexTableCell::field_definition_type] == dbFlexTableDefinition::type_media_link) &&
 					(!empty($value))) {
 				$ext = strtolower(pathinfo($this->media_path.$value, PATHINFO_EXTENSION));
 				$basename = pathinfo($this->media_path.$value, PATHINFO_FILENAME);
@@ -779,17 +779,17 @@ class tableFrontend {
 					'text'		=> $basename,
 					'width'		=> $width,
 					'height'	=> $height
-				);		
+				);
 			}
 			else {
 				$media_type = 'txt';
 				$media_data = array();
 			}
-  		
+
 			$items_array[$item[dbFlexTableCell::field_definition_name]] = array(
 				$dbFlexTableDefinition->template_names[dbFlexTableDefinition::field_description] => $definition[dbFlexTableDefinition::field_description],
 				$dbFlexTableDefinition->template_names[dbFlexTableDefinition::field_head] => $definition[dbFlexTableDefinition::field_head],
-				$dbFlexTableDefinition->template_names[dbFlexTableDefinition::field_title] => $definition[dbFlexTableDefinition::field_title],				
+				$dbFlexTableDefinition->template_names[dbFlexTableDefinition::field_title] => $definition[dbFlexTableDefinition::field_title],
   			$dbFlexTableCell->template_names[dbFlexTableCell::field_char] => $item[dbFlexTableCell::field_char],
   			$dbFlexTableCell->template_names[dbFlexTableCell::field_datetime] => $item[dbFlexTableCell::field_datetime],
   			$dbFlexTableCell->template_names[dbFlexTableCell::field_definition_id] => $item[dbFlexTableCell::field_definition_id],
@@ -808,15 +808,15 @@ class tableFrontend {
   			'media_data'	=> $media_data,
   		);
   	}
-		
+
   	$data = array(
   		'mode'					=> $this->params[self::param_mode],
   		'table'					=> $table_array,
   		'items'					=> $items_array,
   		'link_back'			=> sprintf('%s', $this->page_link),
-  		'link'					=> sprintf(	'%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', 
+  		'link'					=> sprintf(	'%s%s%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&',
   																http_build_query(array(	self::request_action => self::action_detail,
-  																												dbFlexTableRow::field_id => $row_id, 
+  																												dbFlexTableRow::field_id => $row_id,
   																												dbFlexTable::field_id => $table[dbFlexTable::field_id]))),
   		'permalink'			=> $permalink,
   		'anchor'				=> array(	'detail'	=> $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgAnchorDetail),
@@ -824,14 +824,14 @@ class tableFrontend {
   	 );
   	 return $this->getTemplate('detail.htt', $data);
   } // showDetail()
-	
+
   /**
-   * 
+   *
    */
   public function showID() {
   	global $dbFlexTable;
   	global $dbFlexTableRow;
-  	
+
   	if (empty($this->params[self::param_rows]) && ($this->params[self::param_show_last] < 1)) {
   		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, ft_error_detail_params_missing));
   		return false;
@@ -840,12 +840,12 @@ class tableFrontend {
   		// show last row items ...
   		$limit = intval($this->params[self::param_show_last]);
   		$tables = array();
-  		if (!empty($this->params[self::param_name])) { 
+  		if (!empty($this->params[self::param_name])) {
   			// select from desired tables
   			$tabs = explode(',', $this->params[self::param_name]);
   			foreach ($tabs as $tab) {
   				$tab = trim($tab);
-  				$SQL = sprintf( "SELECT %s FROM %s WHERE %s='%s'", 
+  				$SQL = sprintf( "SELECT %s FROM %s WHERE %s='%s'",
   												dbFlexTable::field_id,
   												$dbFlexTable->getTableName(),
   												dbFlexTable::field_name,
@@ -879,7 +879,7 @@ class tableFrontend {
   										dbFlexTableRow::field_timestamp,
   										$limit);
   	  $result = array();
-  
+
   	  if (!$dbFlexTableRow->sqlExec($SQL, $result)) {
   	  	$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbFlexTableRow->getError()));
   	  	return false;
@@ -899,7 +899,7 @@ class tableFrontend {
   	}
   	return $result;
   } // showID
-  
+
 } // class tableFrontend
 
 ?>

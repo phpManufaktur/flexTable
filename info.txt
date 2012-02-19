@@ -10,7 +10,7 @@ changed: introduce $_SESSION['KIT_HTML_REQUEST'] to mark fields which should not
 
 Release 0.20
 2012-02-01
-fixed: problem auto loading flext_table.js (for table filter)
+fixed: problem auto loading flex_table.js (for table filter)
 
 Release 0.19
 2012-01-06
