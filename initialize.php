@@ -2,13 +2,13 @@
 
 /**
  * flexTable
- * 
+ *
  * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
  * @link http://phpmanufaktur.de
  * @copyright 2011
  * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
  * @version $Id$
- * 
+ *
  * FOR VERSION- AND RELEASE NOTES PLEASE LOOK AT INFO.TXT!
  */
 
@@ -46,7 +46,7 @@ if (! file_exists(WB_PATH . '/modules/kit_tools/languages/' . LANGUAGE . '.php')
 // include language file for flexTable
 if (! file_exists(WB_PATH . '/modules/' . basename(dirname(__FILE__)) . '/languages/' . LANGUAGE . '.php')) {
     require_once (WB_PATH . '/modules/' . basename(dirname(__FILE__)) . '/languages/DE.php');
-    if (! defined('FLEX_TABLE_LANGUAGE')) define('FLEX_TABLE_LANGUAGE', 'DE'); 
+    if (! defined('FLEX_TABLE_LANGUAGE')) define('FLEX_TABLE_LANGUAGE', 'DE');
 } else {
     require_once (WB_PATH . '/modules/' . basename(dirname(__FILE__)) . '/languages/' . LANGUAGE . '.php');
     if (! defined('FLEX_TABLE_LANGUAGE')) define('FLEX_TABLE_LANGUAGE', LANGUAGE);
@@ -71,6 +71,9 @@ $compiled_path = WB_PATH . '/temp/compiled';
 if (! file_exists($compiled_path)) @mkdir($compiled_path, 0755, true);
 global $parser;
 if (! is_object($parser)) $parser = new Dwoo($compiled_path, $cache_path);
+// load the plugins
+$loader = $parser->getLoader();
+$loader->addDirectory(WB_PATH.'/modules/flex_table/htt/plugins/');
 
 if (! is_object($kitLibrary)) $kitLibrary = new kitToolsLibrary();
 if (! is_object($dbFlexTable)) $dbFlexTable = new dbFlexTable();
