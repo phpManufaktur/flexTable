@@ -2,12 +2,11 @@
 
 /**
  * flexTable
- * 
- * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ *
+ * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
  * @link http://phpmanufaktur.de
- * @copyright 2011
- * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
- * @version $Id$
+ * @copyright 2011-2012
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
 // Mindestparameter gesetzt?
@@ -18,7 +17,7 @@ require_once(WB_PATH.'/framework/initialize.php');
 
 global $database;
 
-$rowIDs = implode(',', $_POST['rowID']); 
+$rowIDs = implode(',', $_POST['rowID']);
 $SQL = sprintf(	"UPDATE %smod_flex_table SET ft_defs='%s' WHERE ft_id='%s'",
 								TABLE_PREFIX,
 								$rowIDs,

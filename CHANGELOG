@@ -1,0 +1,83 @@
+### flexTable
+(c) 2011-2012 by phpManufaktur
+Ralf Hertsch, Stockholmer Str. 31, 13359 Berlin (Germany)
+http://phpManufaktur.de - ralf.hertsch@phpManufaktur.de
+
+
+Release 0.22 - 2012-06-06
+
+* moved repository from SVN to GitHub
+* added CHANGELOG
+* changed license from GPL to MIT
+* added LICENSE
+* added README.md
+* removed info.txt
+* updated all header and archive informations
+* fixed some typos
+
+Release 0.21 - 2012-02-16
+
+* changed: introduce $_SESSION['KIT_HTML_REQUEST'] to mark fields which should not processed by xssPrevent()
+
+Release 0.20 - 2012-02-01
+
+* fixed: problem auto loading flex_table.js (for table filter)
+
+Release 0.19 - 2012-01-06
+
+* fixed: problem with version comparing
+* fixed: the table filter function won't work proper at LEPTON.
+
+Release 0.18 - 2012-01-05
+
+* added: Support for LEPTON 2.x
+
+Release 0.17 - 2011-12-30
+
+* fixed: some smaller bugs and typos
+
+Release 0.16 - 2011-09-18
+
+* added: droplet [[flex_detail]] enables to view specified table rows with parameter "rows" or to view the last added rows with parameter "show_last" - use parameter "name" to limit "show_last" to specified tables. 
+
+Release 0.15 - 2011-08-11
+
+* added: /htt/plugins directory for user defined Dwoo plugins
+* added: autoload function for all user defined Dwoo plugins
+* added: sample for user defined plugin add_days_to_date()
+* added: missing link and permalink at detail view
+
+Release 0.14 - 2011-07-27
+
+* fixed: linking flex_table.css does not work
+* fixed: &lt;tr&gt; widow in /htt/1/DE/table.htt and /htt/101/DE/table.htt
+* fixed: dynamically linking of detail pages calls the next row instead of the actual row
+* fixed: stripslashes() problem with HTML fields
+* added: droplet parameter "table_header" true/false for switching the table header on/off
+* added: droplet parameter "table_filter" true/false for switching the table filter on/off
+
+Release 0.13 - 2011-07-24
+
+* added: EN.php - many thanks to Jochen Skibbe for translation
+* fixed: datetime fields doesn't work proper
+* added: copy complete rows to a new row
+* added: select columns of a row and copy them to a new row
+* added: detail views can set title, description and keywords of the page
+* added: uses permaLink for creating real permanent links for the detail views of the items
+* changed table.htt: use now {if $row.permalink == ''}{$row.link}{else}{$row.permalink}{/if}#{$anchor.detail} instead of {$cell.link}
+* changed: grant compatibillity for LEPTON CMS
+
+Release 0.12 - 2011-07-03
+
+* added: added free definable anchors for the templates
+* added: integration in WebsiteBaker search
+* added: setting page header informations for detail views
+* added: configuration menu and settings
+
+Release 0.11 - 2011-07-01
+
+* Bugfixing of some smaller problems
+
+Release 0.10 - 2011-06-28
+
+* First Beta Release

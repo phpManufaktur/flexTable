@@ -2,12 +2,11 @@
 //:Please visit http://phpManufaktur.de for informations about kitForm!
 /**
  * flexTable
- * 
- * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ *
+ * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
  * @link http://phpmanufaktur.de
- * @copyright 2011
- * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
- * @version $Id: flex_table.php 10 2011-07-27 07:37:19Z phpmanufaktur $
+ * @copyright 2011-2012
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 if (file_exists(WB_PATH.'/modules/flex_table/class.frontend.php')) {
 	require_once(WB_PATH.'/modules/flex_table/class.frontend.php');
@@ -21,7 +20,7 @@ if (file_exists(WB_PATH.'/modules/flex_table/class.frontend.php')) {
 	$params[tableFrontend::param_mode] = tableFrontend::mode_detail;
 	$params[tableFrontend::param_rows] = (isset($rows)) ? $rows : '';
 	$params[tableFrontend::param_show_last] = (isset($show_last)) ? (int) $show_last : 0;
-	$params[tableFrontend::param_name] = (isset($name)) ? strtolower($name) : ''; 
+	$params[tableFrontend::param_name] = (isset($name)) ? strtolower($name) : '';
 	if (!$table->setParams($params)) return $table->getError();
 	return $table->action();
 }

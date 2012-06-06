@@ -2,32 +2,32 @@
 
 /**
  * flexTable
- * 
- * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ *
+ * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
  * @link http://phpmanufaktur.de
- * @copyright 2011
- * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
- * @version $Id$
- * 
- * FOR VERSION- AND RELEASE NOTES PLEASE LOOK AT INFO.TXT!
+ * @copyright 2011-2012
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
 // include class.secure.php to protect this file and the whole CMS!
 if (defined('WB_PATH')) {
-    if (defined('LEPTON_VERSION')) include (WB_PATH . '/framework/class.secure.php');
-} else {
-    $oneback = "../";
-    $root = $oneback;
-    $level = 1;
-    while (($level < 10) && (! file_exists($root . '/framework/class.secure.php'))) {
-        $root .= $oneback;
-        $level += 1;
-    }
-    if (file_exists($root . '/framework/class.secure.php')) {
-        include ($root . '/framework/class.secure.php');
-    } else {
-        trigger_error(sprintf("[ <b>%s</b> ] Can't include class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
-    }
+  if (defined('LEPTON_VERSION'))
+    include(WB_PATH.'/framework/class.secure.php');
+}
+else {
+  $oneback = "../";
+  $root = $oneback;
+  $level = 1;
+  while (($level < 10) && (!file_exists($root.'/framework/class.secure.php'))) {
+    $root .= $oneback;
+    $level += 1;
+  }
+  if (file_exists($root.'/framework/class.secure.php')) {
+    include($root.'/framework/class.secure.php');
+  }
+  else {
+    trigger_error(sprintf("[ <b>%s</b> ] Can't include class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+  }
 }
 // end include class.secure.php
 
@@ -35,9 +35,9 @@ require_once (WB_PATH . '/modules/' . basename(dirname(__FILE__)) . '/initialize
 
 /**
  * LEPTON 2.x search function for registered DropLEPs
- * This function is called by the LEPTON Search library - please consult the 
+ * This function is called by the LEPTON Search library - please consult the
  * LEPTON documentation for further informations!
- * 
+ *
  * @param array $func_vars - parameters for the search
  * @return boolean true on success
  */
@@ -46,22 +46,22 @@ function flex_table_search($func_vars) {
     global $dbFlexTableCell;
     global $dbFlexTableDefinition;
     global $dbFlexTableCfg;
-    
+
     $result = array();
     $params = array();
     $page_url = '';
-    
+
     $page_url = WB_URL.PAGES_DIRECTORY.$func_vars['page_link'].PAGE_EXTENSION;
-	
+
     $table_names = get_flex_table_names($func_vars['page_id'], $params, $page_url);
-    
+
     if (count($table_names) < 1) return $result;
-    
+
     $anchor = $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgAnchorDetail);
     $type_array = $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgImageFileTypes);
-    
+
     $media_url = WB_URL . MEDIA_DIRECTORY . '/' . $dbFlexTableCfg->getValue(dbFlexTableCfg::cfgMediaDirectory) . '/';
-    
+
     foreach ($table_names as $table_name) {
         // Tabellendaten einlesen
         $where = array(dbFlexTable::field_name => $table_name);
@@ -76,13 +76,13 @@ function flex_table_search($func_vars) {
         }
         $table = $table[0];
         $table_id = $table[dbFlexTable::field_id];
-        
-        $SQL = sprintf("SELECT * FROM %s WHERE %s='%s' ORDER BY %s ASC, FIND_IN_SET(%s, '%s')", 
-            $dbFlexTableCell->getTableName(), 
-            dbFlexTableCell::field_table_id, 
-            $table_id, 
-            dbFlexTableCell::field_row_id, 
-            dbFlexTableCell::field_definition_id, 
+
+        $SQL = sprintf("SELECT * FROM %s WHERE %s='%s' ORDER BY %s ASC, FIND_IN_SET(%s, '%s')",
+            $dbFlexTableCell->getTableName(),
+            dbFlexTableCell::field_table_id,
+            $table_id,
+            dbFlexTableCell::field_row_id,
+            dbFlexTableCell::field_definition_id,
             $table[dbFlexTable::field_definitions]
             );
         $rows = array();
@@ -90,20 +90,20 @@ function flex_table_search($func_vars) {
             trigger_error(sprintf('[%s - %s] %s', __FUNCTION__, __LINE__, $dbFlexTableCell->getError()), E_USER_ERROR);
             return false;
         }
-        
+
         $result = false;
         $divider = '.';
         $row_id = -1;
         $text = '';
         $image_link = '';
-        
+
         foreach ($rows as $row) {
             if ($row_id == -1) $row_id = $row[dbFlexTableCell::field_row_id];
             if ($row_id != $row[dbFlexTableCell::field_row_id]) {
                 $mod_vars = array(
     				'page_link' => sprintf('%s?%s#%s', $page_url, http_build_query(array(
-                                    'act' => 'det', 
-                                    dbFlexTableRow::field_id => $row_id, 
+                                    'act' => 'det',
+                                    dbFlexTableRow::field_id => $row_id,
                                     dbFlexTable::field_id => $table_id)),
     				                $anchor),
     				'page_link_target' => '',
@@ -122,24 +122,24 @@ function flex_table_search($func_vars) {
     			$row_id = $row[dbFlexTableCell::field_row_id];
                 $text = '';
                 $image_link = '';
-            }           
-            
+            }
+
             if (!empty($row[dbFlexTableCell::field_char])) $text .= $row[dbFlexTableCell::field_char].$divider;
             if (!empty($row[dbFlexTableCell::field_html])) $text .= $row[dbFlexTableCell::field_html].$divider;
             if (!empty($row[dbFlexTableCell::field_text])) $text .= $row[dbFlexTableCell::field_text].$divider;
             $text .= $row[dbFlexTableCell::field_integer].$divider;
             $text .= number_format($row[dbFlexTableCell::field_float], 2, ft_cfg_decimal_separator, ft_cfg_thousand_separator).$divider;
             $text .= date(ft_cfg_datetime_str, strtotime($row[dbFlexTableCell::field_datetime]));
-            
+
             if (!empty($row[dbFlexTableCell::field_media_link])) $image_link = $media_url.$row[dbFlexTableCell::field_media_link];
-            
+
         }
-        
+
         if (!empty($text)) {
             $mod_vars = array(
 				'page_link' => sprintf('%s?%s#%s', $page_url, http_build_query(array(
-                                'act' => 'det', 
-                                dbFlexTableRow::field_id => $row_id, 
+                                'act' => 'det',
+                                dbFlexTableRow::field_id => $row_id,
                                 dbFlexTable::field_id => $table_id)),
 				                $anchor),
 				'page_link_target' => '',
@@ -163,14 +163,14 @@ function flex_table_search($func_vars) {
 /**
  * Return the flexTable names, which are used by the DropLEP [[flex_table]] at
  * the page with $page_id
- *  
+ *
  * @param integer $page_id
  * @param array reference $params
  * @param array referenc $page_url
  * @return mixed - array with table names or boolean false on error
  */
 function get_flex_table_names($page_id, &$params = array(), &$page_url = '') {
-    global $database;    
+    global $database;
 
     $SQL = sprintf("SELECT * FROM %smod_wysiwyg WHERE page_id='%s'", TABLE_PREFIX, $page_id);
     if (false ===($query = $database->query($SQL))) {
@@ -190,12 +190,12 @@ function get_flex_table_names($page_id, &$params = array(), &$page_url = '') {
             }
         }
     }
-    
+
     if ((count($table_names) < 1)) {
         // keine Tabelle gefunden, moeglicherweise TOPICS!
         $SQL = sprintf("SHOW TABLE STATUS LIKE '%smod_topics'", TABLE_PREFIX);
         $query = $database->query($SQL);
-        if ($query->numRows() > 0) {            
+        if ($query->numRows() > 0) {
             // TOPICS ist installiert
             $SQL = sprintf("SELECT topic_id, content_long, link FROM %smod_topics WHERE page_id='%s' AND (content_long LIKE '%%[[flex_table?%%')", TABLE_PREFIX, $page_id);
             $query = $database->query($SQL);

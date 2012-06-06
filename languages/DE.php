@@ -2,33 +2,34 @@
 
 /**
  * flexTable
- * 
- * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ *
+ * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
  * @link http://phpmanufaktur.de
- * @copyright 2011
- * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
- * @version $Id$
- * 
- * FOR VERSION- AND RELEASE NOTES PLEASE LOOK AT INFO.TXT!
+ * @copyright 2011-2012
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-// try to include LEPTON class.secure.php to protect this file and the whole CMS!
-if (defined('WB_PATH')) {	
-	if (defined('LEPTON_VERSION')) include(WB_PATH.'/framework/class.secure.php');
-} elseif (file_exists($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php')) {
-	include($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php'); 
-} else {
-	$subs = explode('/', dirname($_SERVER['SCRIPT_NAME']));	$dir = $_SERVER['DOCUMENT_ROOT'];
-	$inc = false;
-	foreach ($subs as $sub) {
-		if (empty($sub)) continue; $dir .= '/'.$sub;
-		if (file_exists($dir.'/framework/class.secure.php')) { 
-			include($dir.'/framework/class.secure.php'); $inc = true;	break; 
-		} 
-	}
-	if (!$inc) trigger_error(sprintf("[ <b>%s</b> ] Can't include LEPTON class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+// include class.secure.php to protect this file and the whole CMS!
+if (defined('WB_PATH')) {
+  if (defined('LEPTON_VERSION'))
+    include(WB_PATH.'/framework/class.secure.php');
 }
-// end include LEPTON class.secure.php
+else {
+  $oneback = "../";
+  $root = $oneback;
+  $level = 1;
+  while (($level < 10) && (!file_exists($root.'/framework/class.secure.php'))) {
+    $root .= $oneback;
+    $level += 1;
+  }
+  if (file_exists($root.'/framework/class.secure.php')) {
+    include($root.'/framework/class.secure.php');
+  }
+  else {
+    trigger_error(sprintf("[ <b>%s</b> ] Can't include class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+  }
+}
+// end include class.secure.php
 
 if ('á' != "\xc3\xa1") {
 	// important: language files must be saved as UTF-8 (without BOM)
@@ -41,7 +42,7 @@ define('ft_cell_false',													'Nein');
 define('ft_cell_true',													'Ja');
 
 define('ft_cfg_currency',												'%s €');
-define('ft_cfg_date_separator',									'.'); 
+define('ft_cfg_date_separator',									'.');
 define('ft_cfg_date_str',												'd.m.Y');
 define('ft_cfg_datetime_str',										'd.m.Y H:i');
 define('ft_cfg_day_names',											"Sonntag, Montag, Dienstag, Mittwoch, Donnerstag, Freitag, Samstag");
@@ -55,9 +56,9 @@ define('ft_cfg_title',													'Herr,Frau');
 
 define('ft_desc_cfg_anchor_detail',							'Anker der bei den Details als Ansprungpunkt {$anchor_detail} verwendet wird.');
 define('ft_desc_cfg_anchor_table',							'Anker der bei der Tabelle als Ansprungpunkt {$anchor_table} verwendet wird.');
-define('ft_desc_cfg_doc_file_types',						'Dateiendungen, die flexTable als Dokumenten Datei akzeptiert'); 
+define('ft_desc_cfg_doc_file_types',						'Dateiendungen, die flexTable als Dokumenten Datei akzeptiert');
 define('ft_desc_cfg_exec',											'Legen Sie fest, ob flexTable ausgeführt wird (1=JA, 0=NEIN)');
-define('ft_desc_cfg_image_file_types',					'Dateiendungen, die flexTable als Bild Datei akzeptiert'); 
+define('ft_desc_cfg_image_file_types',					'Dateiendungen, die flexTable als Bild Datei akzeptiert');
 define('ft_desc_cfg_media_directory',						'Ordner innerhalb des /MEDIA Verzeichnis, das flexTable auf Bilder und Dokumente durchsucht.');
 
 define('ft_error_copy_file',										'<p>Konnte die Datei nicht von %s nach %s kopieren.</p>');
@@ -161,7 +162,7 @@ define('ft_text_table_delete',									'Tabelle löschen');
 
 define('ft_th_description',											'Beschreibung');
 define('ft_th_id',															'ID');
-define('ft_th_name',														'Bezeichner'); 
+define('ft_th_name',														'Bezeichner');
 define('ft_th_timestamp',												'letzte Änderung');
 
 define('ft_type_char',													'Zeichenkette');
