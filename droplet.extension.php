@@ -39,19 +39,17 @@ if (! function_exists('get_flex_table_ids_by_page_id')) {
     function get_flex_table_ids_by_page_id($page_id, &$params = array(), &$page_url = '') {
         global $database;
 
-        $db_wysiwyg = new db_wb_mod_wysiwyg();
-        $SQL = sprintf("SELECT %s FROM %s WHERE %s='%s'", db_wb_mod_wysiwyg::field_text, $db_wysiwyg->getTableName(), db_wb_mod_wysiwyg::field_page_id, $page_id);
-        $sections = array();
-        if (! $db_wysiwyg->sqlExec($SQL, $sections)) {
-            trigger_error(sprintf('[%s - %s] %s', __FUNCTION__, __LINE__, $db_wysiwyg->getError()), E_USER_ERROR);
-            return false;
+        $SQL = "SELECT `text` FROM `".TABLE_PREFIX."mod_wysiwyg` WHERE `page_id`='$page_id'";
+        if (null == ($query = $database->query($SQL))) {
+          trigger_error(sprintf('[%s - %s] %s', __FUNCTION__, __LINE__, $database->get_error()), E_USER_ERROR);
+          return false;
         }
         $table_names = array();
-        foreach ($sections as $section) {
-            if (false !== ($start = strpos($section[db_wb_mod_wysiwyg::field_text], '[[flex_table?'))) {
+        while (false !== ($section = $query->fetchRow(MYSQL_ASSOC))) {
+            if (false !== ($start = strpos($section['text'], '[[flex_table?'))) {
                 $start = $start + strlen('[[flex_table?');
-                $end = strpos($section[db_wb_mod_wysiwyg::field_text], ']]', $start);
-                $param_str = substr($section[db_wb_mod_wysiwyg::field_text], $start, $end - $start);
+                $end = strpos($section['text'], ']]', $start);
+                $param_str = substr($section['text'], $start, $end - $start);
                 $param_str = str_ireplace('&amp;', '&', $param_str);
                 parse_str($param_str, $params);
                 if (isset($params['name'])) {
