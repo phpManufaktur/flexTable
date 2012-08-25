@@ -3,6 +3,10 @@
 Ralf Hertsch, Stockholmer Str. 31, 13359 Berlin (Germany)
 http://phpManufaktur.de - ralf.hertsch@phpManufaktur.de
 
+Release 0.24 - 2012-08-25
+
+* removed class db_wb_mod_wysiwyg from droplet.extension.php
+
 Release 0.23 - 2012-06-14
 
 * removed WebsiteBaker version check
