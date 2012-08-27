@@ -52,9 +52,8 @@ tr.flop {
   background-color: transparent;
 }
 
-input {
+input[type=text] {
   width: 98%;
-  background-color: transparent;
 }
 input[type=submit],
 input[type=button] {

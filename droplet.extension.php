@@ -39,6 +39,7 @@ if (! function_exists('get_flex_table_ids_by_page_id')) {
     function get_flex_table_ids_by_page_id($page_id, &$params = array(), &$page_url = '') {
         global $database;
 
+        // first we check for tables in the wysiwyg sections
         $SQL = "SELECT `text` FROM `".TABLE_PREFIX."mod_wysiwyg` WHERE `page_id`='$page_id'";
         if (null == ($query = $database->query($SQL))) {
           trigger_error(sprintf('[%s - %s] %s', __FUNCTION__, __LINE__, $database->get_error()), E_USER_ERROR);
