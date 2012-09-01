@@ -9,10 +9,10 @@
  * Beispielseite fuer einen Katalog von Naturschutzmassnahmen
  *}
 <a name="{$anchor.detail}"></a> 
-<div id="ft_detail_102">
+<div id="ft_detail_101">
   <h2>{$items.massnahme.value}</h2>
   {if isset($items.bild.media_data.url)}
-  <div class="bild_102">
+  <div class="bild_101">
     <img src="{$items.bild.media_data.url}" alt="{$items.bild.media_data.text}" width="250"/>
   </div>
   {/if}
