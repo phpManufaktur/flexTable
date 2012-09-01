@@ -169,6 +169,7 @@ class dbFlexTableDefinition extends dbConnectLE {
         self::$table_prefix = $config['table_prefix'];
     }
     parent::__construct();
+    $this->setTablePrefix(self::$table_prefix);
     $this->setTableName('mod_flex_table_definition');
   	$this->addFieldDefinition(self::field_id, "INT(11) NOT NULL AUTO_INCREMENT", true);
   	$this->addFieldDefinition(self::field_table_id, "INT(11) NOT NULL DEFAULT '-1'");
@@ -213,6 +214,7 @@ class dbFlexTableRow extends dbConnectLE {
         self::$table_prefix = $config['table_prefix'];
     }
     parent::__construct();
+    $this->setTablePrefix(self::$table_prefix);
     $this->setTableName('mod_flex_table_row');
   	$this->addFieldDefinition(self::field_id, "INT(11) NOT NULL AUTO_INCREMENT", true);
   	$this->addFieldDefinition(self::field_table_id, "INT(11) NOT NULL DEFAULT '-1'");
