@@ -40,20 +40,19 @@ if (!defined('LEPTON_2'))
 $PRECHECK['PHP_VERSION'] = array('VERSION' => '5.2.0', 'OPERATOR' => '>=');
 if (!LEPTON_2) {
     $PRECHECK['WB_ADDONS'] = array(
-    	'dbconnect_le'	=> array('VERSION' => '0.65', 'OPERATOR' => '>='),
+    	'dbconnect_le'	=> array('VERSION' => '0.70', 'OPERATOR' => '>='),
     	'dwoo' => array('VERSION' => '0.11', 'OPERATOR' => '>='),
-    	'droplets' => array('VERSION' => '1.0', 'OPERATOR' => '>='),
-    	'droplets_extension' => array('VERSION' => '0.16', 'OPERATOR' => '>='),
-    	'kit_tools' => array('VERSION' => '0.14', 'OPRATOR' => '>='),
-    	'perma_link' => array('VERSION' => '0.11', 'OPERATOR' => '>=')
+    	'droplets_extension' => array('VERSION' => '0.22', 'OPERATOR' => '>='),
+    	'kit_tools' => array('VERSION' => '0.18', 'OPRATOR' => '>='),
+    	'perma_link' => array('VERSION' => '0.15', 'OPERATOR' => '>=')
     );
 }
 else {
     // LEPTON 2.x
     $PRECHECK['WB_ADDONS'] = array(
     	'dbconnect_le'	=> array('VERSION' => '0.65', 'OPERATOR' => '>='),
-    	'kit_tools' => array('VERSION' => '0.14', 'OPRATOR' => '>='),
-    	'perma_link' => array('VERSION' => '0.11', 'OPERATOR' => '>=')
+    	'kit_tools' => array('VERSION' => '0.18', 'OPRATOR' => '>='),
+    	'perma_link' => array('VERSION' => '0.15', 'OPERATOR' => '>=')
     );
 }
 
