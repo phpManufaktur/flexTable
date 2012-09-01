@@ -57,10 +57,20 @@ class dbFlexTable extends dbConnectLE {
 
 	private $createTables 		= false;
 
+	protected static $config_file = 'config.json';
+	protected static $table_prefix = TABLE_PREFIX;
+
   public function __construct($createTables = false) {
   	$this->createTables = $createTables;
-  	parent::__construct();
-  	$this->setTableName('mod_flex_table');
+  	// use another table prefix?
+    if (file_exists(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/config.json')) {
+      $config = json_decode(file_get_contents(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/config.json'), true);
+      if (isset($config['table_prefix']))
+        self::$table_prefix = $config['table_prefix'];
+    }
+    parent::__construct();
+    $this->setTablePrefix(self::$table_prefix);
+    $this->setTableName('mod_flex_table');
   	$this->addFieldDefinition(self::field_id, "INT(11) NOT NULL AUTO_INCREMENT", true);
   	$this->addFieldDefinition(self::field_name, "VARCHAR(50) NOT NULL DEFAULT ''");
   	$this->addFieldDefinition(self::field_title, "VARCHAR(255) NOT NULL DEFAULT ''");
@@ -147,10 +157,19 @@ class dbFlexTableDefinition extends dbConnectLE {
 
 	private $createTables 		= false;
 
+	protected static $config_file = 'config.json';
+	protected static $table_prefix = TABLE_PREFIX;
+
   public function __construct($createTables = false) {
   	$this->createTables = $createTables;
-  	parent::__construct();
-  	$this->setTableName('mod_flex_table_definition');
+  	// use another table prefix?
+    if (file_exists(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/config.json')) {
+      $config = json_decode(file_get_contents(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/config.json'), true);
+      if (isset($config['table_prefix']))
+        self::$table_prefix = $config['table_prefix'];
+    }
+    parent::__construct();
+    $this->setTableName('mod_flex_table_definition');
   	$this->addFieldDefinition(self::field_id, "INT(11) NOT NULL AUTO_INCREMENT", true);
   	$this->addFieldDefinition(self::field_table_id, "INT(11) NOT NULL DEFAULT '-1'");
   	$this->addFieldDefinition(self::field_name, "VARCHAR(50) NOT NULL DEFAULT ''");
@@ -182,10 +201,19 @@ class dbFlexTableRow extends dbConnectLE {
 
 	private $createTables 		= false;
 
+	protected static $config_file = 'config.json';
+	protected static $table_prefix = TABLE_PREFIX;
+
   public function __construct($createTables = false) {
   	$this->createTables = $createTables;
-  	parent::__construct();
-  	$this->setTableName('mod_flex_table_row');
+  	// use another table prefix?
+    if (file_exists(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/config.json')) {
+      $config = json_decode(file_get_contents(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/config.json'), true);
+      if (isset($config['table_prefix']))
+        self::$table_prefix = $config['table_prefix'];
+    }
+    parent::__construct();
+    $this->setTableName('mod_flex_table_row');
   	$this->addFieldDefinition(self::field_id, "INT(11) NOT NULL AUTO_INCREMENT", true);
   	$this->addFieldDefinition(self::field_table_id, "INT(11) NOT NULL DEFAULT '-1'");
   	$this->addFieldDefinition(self::field_timestamp, "TIMESTAMP");
@@ -241,10 +269,20 @@ class dbFlexTableCell extends dbConnectLE {
 
 	private $createTables 			= false;
 
+	protected static $config_file = 'config.json';
+	protected static $table_prefix = TABLE_PREFIX;
+
   public function __construct($createTables = false) {
   	$this->createTables = $createTables;
-  	parent::__construct();
-  	$this->setTableName('mod_flex_table_cell');
+  	// use another table prefix?
+    if (file_exists(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/config.json')) {
+      $config = json_decode(file_get_contents(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/config.json'), true);
+      if (isset($config['table_prefix']))
+        self::$table_prefix = $config['table_prefix'];
+    }
+    parent::__construct();
+    $this->setTablePrefix(self::$table_prefix);
+    $this->setTableName('mod_flex_table_cell');
   	$this->addFieldDefinition(self::field_id, "INT(11) NOT NULL AUTO_INCREMENT", true);
   	$this->addFieldDefinition(self::field_table_id, "INT(11) NOT NULL DEFAULT '-1'");
   	$this->addFieldDefinition(self::field_row_id, "INT(11) NOT NULL DEFAULT '-1'");
@@ -396,10 +434,20 @@ class dbFlexTableCfg extends dbConnectLE {
   	array('ft_label_cfg_media_directory', self::cfgMediaDirectory, self::type_string, 'flex_table', 'ft_desc_cfg_media_directory')
   );
 
+  protected static $config_file = 'config.json';
+  protected static $table_prefix = TABLE_PREFIX;
+
   public function __construct($createTables = false) {
   	$this->createTables = $createTables;
-  	parent::__construct();
-  	$this->setTableName('mod_flex_table_config');
+  	// use another table prefix?
+    if (file_exists(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/config.json')) {
+      $config = json_decode(file_get_contents(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/config.json'), true);
+      if (isset($config['table_prefix']))
+        self::$table_prefix = $config['table_prefix'];
+    }
+    parent::__construct();
+    $this->setTablePrefix(self::$table_prefix);
+    $this->setTableName('mod_flex_table_config');
   	$this->addFieldDefinition(self::field_id, "INT(11) NOT NULL AUTO_INCREMENT", true);
   	$this->addFieldDefinition(self::field_name, "VARCHAR(32) NOT NULL DEFAULT ''");
   	$this->addFieldDefinition(self::field_type, "TINYINT UNSIGNED NOT NULL DEFAULT '".self::type_undefined."'");

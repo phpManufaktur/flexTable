@@ -6,6 +6,8 @@ http://phpManufaktur.de - ralf.hertsch@phpManufaktur.de
 Release 0.25 - NOT PUBLISHED, JUST IN PROGRESS
 
 * changed CSS declaration for input fields
+* added ability to change the table prefix easy via config.json, please read
+  <http://yals.de/OQRv0Y> for more informations
 
 Release 0.24 - 2012-08-25
 
