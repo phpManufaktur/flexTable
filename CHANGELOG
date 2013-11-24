@@ -3,11 +3,14 @@
 Ralf Hertsch, Stockholmer Str. 31, 13359 Berlin (Germany)
 http://phpManufaktur.de - ralf.hertsch@phpManufaktur.de
 
-Release 0.25 - NOT PUBLISHED, JUST IN PROGRESS
+Release 0.25 - 2013-11-24
 
 * changed CSS declaration for input fields
 * added ability to change the table prefix easy via config.json, please read
   <http://yals.de/OQRv0Y> for more informations
+* changed: precheck.php does no longer check for Dwoo and DropletsExtension at
+  BlackCat CMS environment
+* added icon.png (BlackCat CMS) and tool_icon.png (WebsiteBaker 2.8.4)
 
 Release 0.24 - 2012-08-25
 
@@ -51,7 +54,7 @@ Release 0.17 - 2011-12-30
 
 Release 0.16 - 2011-09-18
 
-* added: droplet [[flex_detail]] enables to view specified table rows with parameter "rows" or to view the last added rows with parameter "show_last" - use parameter "name" to limit "show_last" to specified tables. 
+* added: droplet [[flex_detail]] enables to view specified table rows with parameter "rows" or to view the last added rows with parameter "show_last" - use parameter "name" to limit "show_last" to specified tables.
 
 Release 0.15 - 2011-08-11
 

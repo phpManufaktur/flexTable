@@ -3,7 +3,7 @@
  *
  * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
  * @link http://phpmanufaktur.de
- * @copyright 2011-2012
+ * @copyright 2011-2013
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
@@ -116,6 +116,8 @@ textarea
   color: #000000;
   background-color: transparent;
   font-size: 9pt;
+    margin: 0;
+    padding: 5px;
 }
 .small
 {

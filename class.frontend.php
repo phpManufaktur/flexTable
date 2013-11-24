@@ -5,7 +5,7 @@
  *
  * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
  * @link http://phpmanufaktur.de
- * @copyright 2011-2012
+ * @copyright 2011-2013
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
@@ -33,7 +33,9 @@ else {
 
 require_once (WB_PATH . '/modules/' . basename(dirname(__FILE__)) . '/initialize.php');
 
-if (!LEPTON_2) require_once (WB_PATH . '/modules/droplets_extension/interface.php');
+if (!LEPTON_2 && !defined('CAT_VERSION')) {
+    require_once (WB_PATH . '/modules/droplets_extension/interface.php');
+}
 
 class tableFrontend {
 
@@ -268,7 +270,49 @@ class tableFrontend {
     }
 
     // CSS laden?
-    if (!LEPTON_2) {
+    if (defined('CAT_VERSION')) {
+        if ($this->params[self::param_css]) {
+            if (!CAT_Helper_Droplet::is_registered_droplet_css('flex_table', PAGE_ID)) {
+                CAT_Helper_Droplet::register_droplet_css('flex_table', PAGE_ID, 'flex_table', 'flex_table.css');
+            }
+        }
+        elseif (CAT_Helper_Droplet::is_registered_droplet_css('flex_table', PAGE_ID)) {
+            CAT_Helper_Droplet::unregister_droplet_css('flex_table', PAGE_ID);
+        }
+
+        if ($this->params[self::param_js]) {
+            if (!CAT_Helper_Droplet::is_registered_droplet_js('flex_table', PAGE_ID)) {
+                CAT_Helper_Droplet::register_droplet_js('flex_table', PAGE_ID, 'flex_table', 'flex_table.js');
+            }
+        }
+        elseif (CAT_Helper_Droplet::is_registered_droplet_js('flex_table', PAGE_ID)) {
+            CAT_Helper_Droplet::unregister_droplet_js('flex_table', PAGE_ID);
+        }
+
+        // Register Droplet for the WebsiteBaker Search Function
+        if ($this->params[self::param_search]) {
+            if (!CAT_Helper_Droplet::is_registered_droplet_search('flex_table', PAGE_ID)) {
+                CAT_Helper_Droplet::register_droplet_search('flex_table', PAGE_ID, 'flex_table');
+            }
+        }
+        elseif (CAT_Helper_Droplet::is_registered_droplet_search('flex_table', PAGE_ID)) {
+            CAT_Helper_Droplet::unregister_droplet_search('flex_table', PAGE_ID);
+        }
+
+        // Seiteninformationen bereitstellen?
+        if ($this->params[self::param_page_header]) {
+            if (!CAT_Helper_Droplet::is_registered_droplet_header('flex_table', PAGE_ID)) {
+                CAT_Helper_Droplet::register_droplet_header('flex_table', PAGE_ID, 'flex_table');
+            }
+        }
+        else {
+            if (CAT_Helper_Droplet::is_registered_droplet_header('flex_table', PAGE_ID)) {
+                CAT_Helper_Droplet::unregister_droplet_header('flex_table', PAGE_ID);
+            }
+        }
+    }
+    elseif (!LEPTON_2) {
+        // WB & LEPTON 1.x
       if ($this->params[self::param_css]) {
         if (!is_registered_droplet_css('flex_table', PAGE_ID)) {
           register_droplet_css('flex_table', PAGE_ID, 'flex_table', 'flex_table.css');

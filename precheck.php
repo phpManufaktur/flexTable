@@ -5,7 +5,7 @@
  *
  * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
  * @link http://phpmanufaktur.de
- * @copyright 2011-2012
+ * @copyright 2011-2013
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
@@ -38,21 +38,21 @@ if (!defined('LEPTON_2'))
 // Checking Requirements
 
 $PRECHECK['PHP_VERSION'] = array('VERSION' => '5.2.0', 'OPERATOR' => '>=');
-if (!LEPTON_2) {
+if (!LEPTON_2 && !defined('CAT_VERSION')) {
     $PRECHECK['WB_ADDONS'] = array(
-    	'dbconnect_le'	=> array('VERSION' => '0.70', 'OPERATOR' => '>='),
-    	'dwoo' => array('VERSION' => '0.11', 'OPERATOR' => '>='),
-    	'droplets_extension' => array('VERSION' => '0.22', 'OPERATOR' => '>='),
-    	'kit_tools' => array('VERSION' => '0.18', 'OPRATOR' => '>='),
-    	'perma_link' => array('VERSION' => '0.15', 'OPERATOR' => '>=')
+        'dbconnect_le'    => array('VERSION' => '0.71', 'OPERATOR' => '>='),
+        'dwoo' => array('VERSION' => '0.11', 'OPERATOR' => '>='),
+        'droplets_extension' => array('VERSION' => '0.22', 'OPERATOR' => '>='),
+        'kit_tools' => array('VERSION' => '0.18', 'OPRATOR' => '>='),
+        'perma_link' => array('VERSION' => '0.15', 'OPERATOR' => '>=')
     );
 }
 else {
-    // LEPTON 2.x
+    // LEPTON 2.x or BlackCat
     $PRECHECK['WB_ADDONS'] = array(
-    	'dbconnect_le'	=> array('VERSION' => '0.65', 'OPERATOR' => '>='),
-    	'kit_tools' => array('VERSION' => '0.18', 'OPRATOR' => '>='),
-    	'perma_link' => array('VERSION' => '0.15', 'OPERATOR' => '>=')
+        'dbconnect_le'    => array('VERSION' => '0.71', 'OPERATOR' => '>='),
+        'kit_tools' => array('VERSION' => '0.18', 'OPRATOR' => '>='),
+        'perma_link' => array('VERSION' => '0.15', 'OPERATOR' => '>=')
     );
 }
 
@@ -60,15 +60,12 @@ global $database;
 $sql = "SELECT `value` FROM `".TABLE_PREFIX."settings` WHERE `name`='default_charset'";
 $result = $database->query($sql);
 if ($result) {
-	$data = $result->fetchRow(MYSQL_ASSOC);
-	$PRECHECK['CUSTOM_CHECKS'] = array(
-		'Default Charset' => array(
-			'REQUIRED' => 'utf-8',
-			'ACTUAL' => $data['value'],
-			'STATUS' => ($data['value'] === 'utf-8')
-		)
-	);
+    $data = $result->fetchRow(MYSQL_ASSOC);
+    $PRECHECK['CUSTOM_CHECKS'] = array(
+        'Default Charset' => array(
+            'REQUIRED' => 'utf-8',
+            'ACTUAL' => $data['value'],
+            'STATUS' => ($data['value'] === 'utf-8')
+        )
+    );
 }
-
-
-?>
